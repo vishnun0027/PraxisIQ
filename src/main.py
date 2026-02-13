@@ -1,16 +1,14 @@
 import json
 import time
+from pathlib import Path
 from typing import List, Literal
-from pydantic import BaseModel, Field, ValidationError
+
+import yaml
 from langchain_ollama import ChatOllama
+from pydantic import BaseModel, Field, ValidationError
 
 
 class JournalAnalysis(BaseModel):
-    """
-    Structured analysis of a journal entry with CBT-style insights. 
-    All fields are required and must adhere to specified formats and constraints.
-    """
-
     emotion_summary: str = Field(
         description="Brief summary of the user's emotional state"
     )
@@ -57,16 +55,33 @@ class JournalAnalysis(BaseModel):
         ge=0.0, le=1.0, description="Model confidence score between 0 and 1"
     )
 
-llm = ChatOllama(model="gpt-oss:120b-cloud", temperature=0.0)
-model_with_structure = llm.with_structured_output(JournalAnalysis)
-response = model_with_structure.invoke(
-    "I feel completely overwhelmed at work. My manager keeps pointing out mistakes. I feel likeI will fail and everything will collapse."
-)
+
+def _initialize_model() -> ChatOllama:
+    config_path = Path("config/llm_model.yaml")
+
+    if not config_path.exists():
+        raise FileNotFoundError("llm_model.yaml not found")
+
+    with open(config_path, "r", encoding="utf-8") as file:
+        config = yaml.safe_load(file)
+
+    return ChatOllama(
+        model=config["model_name"],
+        temperature=config.get("temperature", 0.0),
+        format=config.get("format", "json"),
+        timeout=config.get("timeout"),
+        num_predict=config.get("num_predict"),
+        top_p=config.get("top_p"),
+        repeat_penalty=config.get("repeat_penalty"),
+    )
+
+
+_llm = _initialize_model()
 
 
 class JournalAnalyzer:
-    def __init__(self, model_name: str, temperature: float = 0.0) -> None:
-        self._llm = ChatOllama(model=model_name, temperature=temperature)
+    def __init__(self) -> None:
+        self._llm = _llm
 
     def _build_prompt(self, entry: str) -> str:
         return f"""
@@ -107,14 +122,17 @@ Required structure:
 }}
 
 Journal Entry:
-{entry}
+{entry.strip()}
 """
 
     def _parse_response(self, content: str) -> JournalAnalysis:
         parsed = json.loads(content)
-        return JournalAnalysis(**parsed)
+        return JournalAnalysis.model_validate(parsed)
 
     def analyze(self, entry: str, max_retries: int = 3) -> JournalAnalysis:
+        if not entry or not entry.strip():
+            raise ValueError("Journal entry must not be empty")
+
         last_error: Exception | None = None
 
         for _ in range(max_retries):
@@ -130,7 +148,7 @@ Journal Entry:
 
 
 if __name__ == "__main__":
-    analyzer = JournalAnalyzer(model_name="gpt-oss:120b-cloud")
+    analyzer = JournalAnalyzer()
 
     journal_entry = """
     I feel completely overwhelmed at work.
