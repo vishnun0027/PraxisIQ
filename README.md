@@ -1,4 +1,6 @@
-PostgreSQL 16+
+
+
+1 PostgreSQL 16+
 Run locally via Docker:
 ```
 docker run --name journal-db \
