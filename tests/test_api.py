@@ -1,0 +1,156 @@
+import json
+from unittest.mock import MagicMock, patch
+
+import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine, StaticPool
+from sqlalchemy.orm import sessionmaker
+
+from src.core.database import Base, get_db
+from src.main import app
+
+
+VALID_ANALYSIS_JSON = json.dumps(
+    {
+        "emotion_summary": "User shows signs of stress",
+        "detected_emotions": ["stress"],
+        "emotional_intensity": 5,
+        "cognitive_distortions": ["catastrophizing"],
+        "root_cause_analysis": "Work-related pressure",
+        "action_steps": ["Take a break"],
+        "reframing": "This is temporary",
+        "motivational_guidance": "You are capable",
+        "crisis_detected": False,
+    }
+)
+
+
+@pytest.fixture()
+def db_session():
+    engine = create_engine(
+        "sqlite:///:memory:",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    TestingSession = sessionmaker(bind=engine, autocommit=False, autoflush=False)
+    Base.metadata.create_all(bind=engine)
+
+    session = TestingSession()
+    try:
+        yield session
+    finally:
+        session.close()
+        Base.metadata.drop_all(bind=engine)
+
+
+@pytest.fixture()
+def client(db_session):
+    def override_get_db():
+        try:
+            yield db_session
+        finally:
+            pass
+
+    app.dependency_overrides[get_db] = override_get_db
+    with patch("src.main.init_db"):
+        with TestClient(app) as c:
+            yield c
+    app.dependency_overrides.clear()
+
+
+class TestHealthEndpoint:
+    def test_health_returns_ok(self, client: TestClient) -> None:
+        response = client.get("/health")
+        assert response.status_code == 200
+        assert response.json() == {"status": "ok"}
+
+
+class TestJournalEndpoint:
+    @patch("src.main.analyzer")
+    def test_post_journal_success(
+        self, mock_analyzer: MagicMock, client: TestClient
+    ) -> None:
+        from src.analyzer import JournalAnalysis
+
+        analysis = JournalAnalysis.model_validate_json(VALID_ANALYSIS_JSON)
+        mock_analyzer.analyze.return_value = analysis
+
+        response = client.post("/journal", json={"text": "I feel stressed"})
+        assert response.status_code == 200
+
+        data = response.json()
+        assert data["text"] == "I feel stressed"
+        assert data["analysis"]["detected_emotions"] == ["stress"]
+        assert "id" in data
+        assert "created_at" in data
+
+    @patch("src.main.analyzer")
+    def test_post_journal_empty_text(
+        self, mock_analyzer: MagicMock, client: TestClient
+    ) -> None:
+        mock_analyzer.analyze.side_effect = ValueError("Journal entry must not be empty")
+
+        response = client.post("/journal", json={"text": ""})
+        assert response.status_code == 422
+
+    @patch("src.main.analyzer")
+    def test_post_journal_llm_failure(
+        self, mock_analyzer: MagicMock, client: TestClient
+    ) -> None:
+        mock_analyzer.analyze.side_effect = RuntimeError("Failed to generate")
+
+        response = client.post("/journal", json={"text": "test"})
+        assert response.status_code == 503
+
+
+class TestHistoryEndpoint:
+    @patch("src.main.analyzer")
+    def test_get_history_empty(
+        self, mock_analyzer: MagicMock, client: TestClient
+    ) -> None:
+        response = client.get("/journal/history")
+        assert response.status_code == 200
+        assert response.json() == []
+
+    @patch("src.main.analyzer")
+    def test_get_history_after_post(
+        self, mock_analyzer: MagicMock, client: TestClient
+    ) -> None:
+        from src.analyzer import JournalAnalysis
+
+        analysis = JournalAnalysis.model_validate_json(VALID_ANALYSIS_JSON)
+        mock_analyzer.analyze.return_value = analysis
+
+        client.post("/journal", json={"text": "Entry 1"})
+        client.post("/journal", json={"text": "Entry 2"})
+
+        response = client.get("/journal/history")
+        assert response.status_code == 200
+
+        data = response.json()
+        assert len(data) == 2
+
+
+class TestDetailEndpoint:
+    @patch("src.main.analyzer")
+    def test_get_entry_not_found(
+        self, mock_analyzer: MagicMock, client: TestClient
+    ) -> None:
+        response = client.get("/journal/999")
+        assert response.status_code == 404
+
+    @patch("src.main.analyzer")
+    def test_get_entry_by_id(
+        self, mock_analyzer: MagicMock, client: TestClient
+    ) -> None:
+        from src.analyzer import JournalAnalysis
+
+        analysis = JournalAnalysis.model_validate_json(VALID_ANALYSIS_JSON)
+        mock_analyzer.analyze.return_value = analysis
+
+        post_response = client.post("/journal", json={"text": "My entry"})
+        entry_id = post_response.json()["id"]
+
+        response = client.get(f"/journal/{entry_id}")
+        assert response.status_code == 200
+        assert response.json()["text"] == "My entry"
