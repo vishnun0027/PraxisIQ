@@ -68,3 +68,25 @@
 2026-03-05 17:01:04,703 | INFO | src.main | lifespan:20 | Initializing database tables
 2026-03-05 17:01:04,755 | INFO | src.core.database | init_db:39 | Database tables created successfully
 2026-03-05 17:01:04,756 | INFO | src.main | lifespan:22 | Database ready
+2026-03-05 17:19:46,392 | INFO | src.main | lifespan:20 | Initializing database tables
+2026-03-05 17:19:46,463 | INFO | src.core.database | init_db:39 | Database tables created successfully
+2026-03-05 17:19:46,463 | INFO | src.main | lifespan:22 | Database ready
+2026-03-07 05:24:42,295 | INFO | src.main | lifespan:20 | Initializing database tables
+2026-03-07 05:24:42,297 | INFO | src.main | lifespan:22 | Database ready
+2026-03-07 05:24:42,330 | INFO | src.main | lifespan:20 | Initializing database tables
+2026-03-07 05:24:42,331 | INFO | src.main | lifespan:22 | Database ready
+2026-03-07 05:24:42,394 | INFO | src.main | lifespan:20 | Initializing database tables
+2026-03-07 05:24:42,396 | INFO | src.main | lifespan:22 | Database ready
+2026-03-07 05:24:42,429 | INFO | src.main | lifespan:20 | Initializing database tables
+2026-03-07 05:24:42,432 | INFO | src.main | lifespan:22 | Database ready
+2026-03-07 05:24:42,464 | INFO | src.main | lifespan:20 | Initializing database tables
+2026-03-07 05:24:42,465 | INFO | src.main | lifespan:22 | Database ready
+2026-03-07 05:24:42,505 | INFO | src.main | lifespan:20 | Initializing database tables
+2026-03-07 05:24:42,507 | INFO | src.main | lifespan:22 | Database ready
+2026-03-07 05:24:42,544 | INFO | src.main | lifespan:20 | Initializing database tables
+2026-03-07 05:24:42,545 | INFO | src.main | lifespan:22 | Database ready
+2026-03-07 05:24:42,560 | INFO | src.main | lifespan:20 | Initializing database tables
+2026-03-07 05:24:42,560 | INFO | src.main | lifespan:22 | Database ready
+2026-03-07 05:37:51,617 | INFO | src.main | lifespan:20 | Initializing database tables
+2026-03-07 05:37:51,727 | INFO | src.core.database | init_db:39 | Database tables created successfully
+2026-03-07 05:37:51,727 | INFO | src.main | lifespan:22 | Database ready
