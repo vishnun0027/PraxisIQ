@@ -43,6 +43,70 @@ class TestJournalAnalysis:
         with pytest.raises(Exception):
             JournalAnalysis.model_validate(data)
 
+    def test_invalid_distortion_rejected(self) -> None:
+        data = json.loads(VALID_ANALYSIS_JSON)
+        data["cognitive_distortions"] = ["made_up_distortion"]
+        with pytest.raises(Exception):
+            JournalAnalysis.model_validate(data)
+
+
+# --- Parametrized: every individual emotion must be accepted ---
+ALL_VALID_EMOTIONS = [
+    "joy", "gratitude", "calm", "hope", "love", "excitement", "pride",
+    "sadness", "anxiety", "stress", "anger", "frustration", "fear",
+    "disgust", "shame", "guilt", "loneliness", "jealousy", "burnout", "overwhelm",
+]
+
+ALL_VALID_DISTORTIONS = [
+    "catastrophizing", "all_or_nothing", "overgeneralization", "mind_reading",
+    "negative_filtering", "emotional_reasoning", "should_statements",
+    "labeling", "personalization", "magnification",
+]
+
+
+class TestAllEmotionsAccepted:
+    @pytest.mark.parametrize("emotion", ALL_VALID_EMOTIONS)
+    def test_single_emotion_accepted(self, emotion: str) -> None:
+        data = json.loads(VALID_ANALYSIS_JSON)
+        data["detected_emotions"] = [emotion]
+        analysis = JournalAnalysis.model_validate(data)
+        assert analysis.detected_emotions == [emotion]
+
+    def test_all_emotions_at_once(self) -> None:
+        data = json.loads(VALID_ANALYSIS_JSON)
+        data["detected_emotions"] = ALL_VALID_EMOTIONS
+        analysis = JournalAnalysis.model_validate(data)
+        assert set(analysis.detected_emotions) == set(ALL_VALID_EMOTIONS)
+
+    @pytest.mark.parametrize("bad_emotion", ["happy", "positive", "angry", "scared", "bored", "confused", ""])
+    def test_invalid_emotion_values_rejected(self, bad_emotion: str) -> None:
+        data = json.loads(VALID_ANALYSIS_JSON)
+        data["detected_emotions"] = [bad_emotion]
+        with pytest.raises(Exception):
+            JournalAnalysis.model_validate(data)
+
+
+class TestAllDistortionsAccepted:
+    @pytest.mark.parametrize("distortion", ALL_VALID_DISTORTIONS)
+    def test_single_distortion_accepted(self, distortion: str) -> None:
+        data = json.loads(VALID_ANALYSIS_JSON)
+        data["cognitive_distortions"] = [distortion]
+        analysis = JournalAnalysis.model_validate(data)
+        assert analysis.cognitive_distortions == [distortion]
+
+    def test_all_distortions_at_once(self) -> None:
+        data = json.loads(VALID_ANALYSIS_JSON)
+        data["cognitive_distortions"] = ALL_VALID_DISTORTIONS
+        analysis = JournalAnalysis.model_validate(data)
+        assert set(analysis.cognitive_distortions) == set(ALL_VALID_DISTORTIONS)
+
+    @pytest.mark.parametrize("bad_distortion", ["overthinking", "rumination", "projection", ""])
+    def test_invalid_distortion_values_rejected(self, bad_distortion: str) -> None:
+        data = json.loads(VALID_ANALYSIS_JSON)
+        data["cognitive_distortions"] = [bad_distortion]
+        with pytest.raises(Exception):
+            JournalAnalysis.model_validate(data)
+
 
 class TestJournalAnalyzer:
     def test_empty_entry_raises(self) -> None:

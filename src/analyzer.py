@@ -17,8 +17,17 @@ class JournalAnalysis(BaseModel):
     )
 
     detected_emotions: List[
-        Literal["stress", "anxiety", "frustration", "burnout", "sadness", "positive"]
-    ] = Field(description="List of detected core emotions using only allowed values")
+        Literal[
+            # Positive
+            "joy", "gratitude", "calm", "hope", "love",
+            "excitement", "pride",
+            # Negative
+            "sadness", "anxiety", "stress", "anger",
+            "frustration", "fear", "disgust", "shame",
+            "guilt", "loneliness", "jealousy", "burnout",
+            "overwhelm",
+        ]
+    ] = Field(description="List of detected emotions using only allowed values")
 
     emotional_intensity: int = Field(
         ge=1,
@@ -33,6 +42,11 @@ class JournalAnalysis(BaseModel):
             "overgeneralization",
             "mind_reading",
             "negative_filtering",
+            "emotional_reasoning",
+            "should_statements",
+            "labeling",
+            "personalization",
+            "magnification",
         ]
     ] = Field(description="Detected cognitive distortions using only allowed values")
 
@@ -92,10 +106,10 @@ No additional keys.
 No trailing text.
 
 Allowed detected_emotions:
-["stress","anxiety","frustration","burnout","sadness","positive"]
+["joy","gratitude","calm","hope","love","excitement","pride","sadness","anxiety","stress","anger","frustration","fear","disgust","shame","guilt","loneliness","jealousy","burnout","overwhelm"]
 
 Allowed cognitive_distortions:
-["catastrophizing","all_or_nothing","overgeneralization","mind_reading","negative_filtering"]
+["catastrophizing","all_or_nothing","overgeneralization","mind_reading","negative_filtering","emotional_reasoning","should_statements","labeling","personalization","magnification"]
 
 Constraints:
 - emotional_intensity: integer 1-10

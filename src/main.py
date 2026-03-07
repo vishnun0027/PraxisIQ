@@ -43,7 +43,7 @@ class JournalRequest(BaseModel):
 class JournalEntryResponse(BaseModel):
     id: int
     text: str
-    analysis: JournalAnalysis
+    analysis: dict
     created_at: str
 
 
@@ -78,7 +78,7 @@ def analyze_journal(
     return JournalEntryResponse(
         id=entry.id,
         text=entry.text,
-        analysis=analysis,
+        analysis=analysis.model_dump(),
         created_at=entry.created_at.isoformat(),
     )
 
@@ -94,7 +94,7 @@ def journal_history(
         JournalEntryResponse(
             id=e.id,
             text=e.text,
-            analysis=JournalAnalysis.model_validate(e.analysis),
+            analysis=e.analysis,
             created_at=e.created_at.isoformat(),
         )
         for e in entries
@@ -113,6 +113,6 @@ def journal_detail(
     return JournalEntryResponse(
         id=entry.id,
         text=entry.text,
-        analysis=JournalAnalysis.model_validate(entry.analysis),
+        analysis=entry.analysis,
         created_at=entry.created_at.isoformat(),
     )
