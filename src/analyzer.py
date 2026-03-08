@@ -1,7 +1,7 @@
 import json
 import time
 from pathlib import Path
-from typing import List, Literal
+from typing import Literal
 
 import yaml
 from langchain_ollama import ChatOllama
@@ -10,63 +10,8 @@ from src.core.logging import get_logger
 
 logger = get_logger(__name__)
 
+_llm_instance: ChatOllama | None = None
 
-class JournalAnalysis(BaseModel):
-    emotion_summary: str = Field(
-        description="Brief summary of the user's emotional state"
-    )
-
-    detected_emotions: List[
-        Literal[
-            # Positive
-            "joy", "gratitude", "calm", "hope", "love",
-            "excitement", "pride",
-            # Negative
-            "sadness", "anxiety", "stress", "anger",
-            "frustration", "fear", "disgust", "shame",
-            "guilt", "loneliness", "jealousy", "burnout",
-            "overwhelm",
-        ]
-    ] = Field(description="List of detected emotions using only allowed values")
-
-    emotional_intensity: int = Field(
-        ge=1,
-        le=10,
-        description="Overall emotional intensity score from 1 (low) to 10 (very high)",
-    )
-
-    cognitive_distortions: List[
-        Literal[
-            "catastrophizing",
-            "all_or_nothing",
-            "overgeneralization",
-            "mind_reading",
-            "negative_filtering",
-            "emotional_reasoning",
-            "should_statements",
-            "labeling",
-            "personalization",
-            "magnification",
-        ]
-    ] = Field(description="Detected cognitive distortions using only allowed values")
-
-    root_cause_analysis: str = Field(
-        description="Likely psychological root cause of emotional state"
-    )
-
-    action_steps: List[str] = Field(
-        min_length=1, description="Practical, actionable improvement steps"
-    )
-
-    reframing: str = Field(description="CBT-style cognitive reframing")
-
-    motivational_guidance: str = Field(
-        description="Encouraging motivational support message"
-    )
-
-    crisis_detected: bool = Field(
-        description="True if crisis or self-harm language is detected"
-    )
 
 def _initialize_model() -> ChatOllama:
     config_path = Path("config/llm_model.yaml")
@@ -88,12 +33,75 @@ def _initialize_model() -> ChatOllama:
     )
 
 
-_llm = _initialize_model()
+def _get_llm() -> ChatOllama:
+    """Lazily initialize the LLM singleton on first call."""
+    global _llm_instance
+    if _llm_instance is None:
+        _llm_instance = _initialize_model()
+    return _llm_instance
+
+
+class JournalAnalysis(BaseModel):
+    emotion_summary: str = Field(
+        description="Brief summary of the user's emotional state"
+    )
+
+    detected_emotions: list[
+        Literal[
+            # Positive
+            "joy", "gratitude", "calm", "hope", "love",
+            "excitement", "pride",
+            # Negative
+            "sadness", "anxiety", "stress", "anger",
+            "frustration", "fear", "disgust", "shame",
+            "guilt", "loneliness", "jealousy", "burnout",
+            "overwhelm",
+        ]
+    ] = Field(description="List of detected emotions using only allowed values")
+
+    emotional_intensity: int = Field(
+        ge=1,
+        le=10,
+        description="Overall emotional intensity score from 1 (low) to 10 (very high)",
+    )
+
+    cognitive_distortions: list[
+        Literal[
+            "catastrophizing",
+            "all_or_nothing",
+            "overgeneralization",
+            "mind_reading",
+            "negative_filtering",
+            "emotional_reasoning",
+            "should_statements",
+            "labeling",
+            "personalization",
+            "magnification",
+        ]
+    ] = Field(description="Detected cognitive distortions using only allowed values")
+
+    root_cause_analysis: str = Field(
+        description="Likely psychological root cause of emotional state"
+    )
+
+    action_steps: list[str] = Field(
+        min_length=1, description="Practical, actionable improvement steps"
+    )
+
+    reframing: str = Field(description="CBT-style cognitive reframing")
+
+    motivational_guidance: str = Field(
+        description="Encouraging motivational support message"
+    )
+
+    crisis_detected: bool = Field(
+        description="True if crisis or self-harm language is detected"
+    )
 
 
 class JournalAnalyzer:
     def __init__(self) -> None:
-        self._llm = _llm
+        self._llm = _get_llm()
 
     def _build_prompt(self, entry: str) -> str:
         return f"""
@@ -146,26 +154,13 @@ Journal Entry:
 
         last_error: Exception | None = None
 
-        for _ in range(max_retries):
+        for attempt in range(max_retries):
             response = self._llm.invoke(self._build_prompt(entry))
 
             try:
                 return self._parse_response(response.content)
             except (json.JSONDecodeError, ValidationError) as exc:
                 last_error = exc
-                time.sleep(0.5)
+                time.sleep(0.5 * (2 ** attempt))  # Exponential back-off
 
         raise RuntimeError("Failed to generate valid structured output") from last_error
-
-
-if __name__ == "__main__":
-    analyzer = JournalAnalyzer()
-
-    journal_entry = """
-    I feel completely overwhelmed at work.
-    My manager keeps pointing out mistakes.
-    I feel like I will fail and everything will collapse.
-    """
-
-    analysis = analyzer.analyze(journal_entry)
-    print(analysis.model_dump_json(indent=2))

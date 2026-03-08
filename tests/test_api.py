@@ -154,3 +154,18 @@ class TestDetailEndpoint:
         response = client.get(f"/journal/{entry_id}")
         assert response.status_code == 200
         assert response.json()["text"] == "My entry"
+
+
+class TestClearEndpoint:
+    @patch("src.main.clear_entries")
+    def test_clear_all_entries(
+        self, mock_clear_entries: MagicMock, client: TestClient
+    ) -> None:
+        mock_clear_entries.return_value = 5
+
+        response = client.delete("/journal/all")
+        
+        assert response.status_code == 200
+        assert response.json() == {"deleted": 5}
+        mock_clear_entries.assert_called_once()
+

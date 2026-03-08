@@ -3,6 +3,8 @@ Shared UI helpers — CSS, HTML builders, Plotly charts.
 Imported by both pages.
 """
 
+from collections import Counter
+
 import streamlit as st
 import plotly.graph_objects as go
 from datetime import datetime
@@ -206,12 +208,13 @@ def make_history_trend(entries: list[dict]) -> go.Figure | None:
     dates, intensities, texts = [], [], []
     for e in reversed(entries):
         try:
-            dates.append(datetime.fromisoformat(e["created_at"]))
+            dt = datetime.fromisoformat(e["created_at"])
         except Exception:
-            continue
+            continue  # Skip entries with invalid/missing dates (keeps all 3 lists in sync)
+        raw_text = e.get("text", "")
+        dates.append(dt)
         intensities.append(e.get("analysis", {}).get("emotional_intensity", 0))
-        t = e.get("text", "")[:60]
-        texts.append(t + ("..." if len(e.get("text", "")) > 60 else ""))
+        texts.append(raw_text[:60] + ("..." if len(raw_text) > 60 else ""))
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(
@@ -239,7 +242,6 @@ def make_emotion_frequency(entries: list[dict]) -> go.Figure | None:
     """Bar chart showing how often each emotion appears across all entries."""
     if not entries:
         return None
-    from collections import Counter
     counter: Counter[str] = Counter()
     for e in entries:
         for em in e.get("analysis", {}).get("detected_emotions", []):

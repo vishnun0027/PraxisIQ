@@ -25,7 +25,7 @@ st.markdown('<p class="tagline">AI-powered emotional analysis &amp; CBT insights
 
 st.markdown("---")
 
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns(3)
 
 with col1:
     st.markdown(
@@ -42,3 +42,11 @@ with col2:
         unsafe_allow_html=True,
     )
     st.page_link("pages/2_Dashboard.py", label="📊 View Dashboard", icon="📈")
+
+with col3:
+    st.markdown(
+        '<p class="section-title">🔍 Semantic Search</p>'
+        '<p class="card-text-sm">Find conceptually similar past entries based on feelings, situations, or abstract topics.</p>',
+        unsafe_allow_html=True,
+    )
+    st.page_link("pages/3_Semantic_Search.py", label="🔍 Search Entries", icon="🔍")

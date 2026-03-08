@@ -1,0 +1,66 @@
+2026-03-07 07:44:35,898 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 07:44:35,898 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 07:44:35,921 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 07:44:35,921 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 07:44:35,956 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 07:44:35,957 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 07:44:35,981 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 07:44:35,983 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 07:44:36,009 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 07:44:36,010 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 07:44:36,039 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 07:44:36,040 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 07:44:36,083 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 07:44:36,084 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 07:44:36,109 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 07:44:36,110 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 07:45:24,165 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 07:45:24,166 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 07:45:24,178 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 07:45:24,178 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 07:45:24,194 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 07:45:24,195 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 07:45:24,204 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 07:45:24,205 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 07:45:24,216 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 07:45:24,216 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 07:45:24,233 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 07:45:24,234 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 07:45:24,266 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 07:45:24,267 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 07:45:24,287 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 07:45:24,288 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 07:49:36,778 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 07:49:36,970 | INFO | src.core.database | init_db:43 | Database tables created successfully
+2026-03-07 07:49:36,970 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 07:56:38,340 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 07:56:38,402 | INFO | src.core.database | init_db:43 | Database tables created successfully
+2026-03-07 07:56:38,403 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 07:56:48,760 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 07:56:48,798 | INFO | src.core.database | init_db:43 | Database tables created successfully
+2026-03-07 07:56:48,799 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 07:57:05,725 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 07:57:05,773 | INFO | src.core.database | init_db:43 | Database tables created successfully
+2026-03-07 07:57:05,773 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 08:00:10,131 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 08:00:10,185 | INFO | src.core.database | init_db:43 | Database tables created successfully
+2026-03-07 08:00:10,186 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 08:00:38,865 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 08:00:38,866 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 08:00:38,892 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 08:00:38,893 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 08:00:38,954 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 08:00:38,956 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 08:00:38,993 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 08:00:38,994 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 08:00:39,029 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 08:00:39,031 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 08:00:39,072 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 08:00:39,073 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 08:00:39,133 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 08:00:39,135 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 08:00:39,171 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 08:00:39,172 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 08:00:39,224 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-07 08:00:39,225 | INFO | src.main | lifespan:23 | Database ready
+2026-03-07 08:00:39,235 | INFO | src.main | journal_clear_all:108 | Cleared all journal entries (5 rows)

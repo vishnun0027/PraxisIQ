@@ -125,7 +125,7 @@ class TestJournalAnalyzer:
         assert "I feel stressed today" in prompt
         assert "JSON" in prompt
 
-    @patch("src.analyzer._llm")
+    @patch("src.analyzer._llm_instance")
     def test_analyze_returns_valid_analysis(self, mock_llm: MagicMock) -> None:
         mock_response = MagicMock()
         mock_response.content = VALID_ANALYSIS_JSON
@@ -140,7 +140,7 @@ class TestJournalAnalyzer:
         assert result.detected_emotions == ["stress", "anxiety"]
         mock_llm.invoke.assert_called_once()
 
-    @patch("src.analyzer._llm")
+    @patch("src.analyzer._llm_instance")
     def test_analyze_retries_on_invalid_json(self, mock_llm: MagicMock) -> None:
         bad_response = MagicMock()
         bad_response.content = "not json at all"
@@ -157,7 +157,7 @@ class TestJournalAnalyzer:
         assert isinstance(result, JournalAnalysis)
         assert mock_llm.invoke.call_count == 2
 
-    @patch("src.analyzer._llm")
+    @patch("src.analyzer._llm_instance")
     def test_analyze_raises_after_max_retries(self, mock_llm: MagicMock) -> None:
         bad_response = MagicMock()
         bad_response.content = "bad json"

@@ -4,12 +4,13 @@ from collections.abc import AsyncGenerator
 
 from fastapi import FastAPI, HTTPException, Depends, Query
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, ConfigDict, ValidationError
 from sqlalchemy.orm import Session
 
 from src.analyzer import JournalAnalyzer, JournalAnalysis
-from src.core.crud import save_entry, get_entries, get_entry_by_id
-from src.core.database import get_db, init_db
+from src.core.crud import save_entry, get_entries, get_entry_by_id, clear_entries, search_similar_entries
+from src.core.database import get_db, init_db, init_qdrant
+from src.core.models import JournalEntry
 from src.core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -19,7 +20,9 @@ logger = get_logger(__name__)
 async def lifespan(application: FastAPI) -> AsyncGenerator[None, None]:
     logger.info("Initializing database tables")
     init_db()
-    logger.info("Database ready")
+    logger.info("Initializing Qdrant VectorDB")
+    init_qdrant()
+    logger.info("Application ready")
     yield
 
 
@@ -41,10 +44,22 @@ class JournalRequest(BaseModel):
 
 
 class JournalEntryResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     text: str
     analysis: dict
     created_at: str
+
+
+def _entry_to_response(entry: JournalEntry, analysis: dict | None = None) -> JournalEntryResponse:
+    """Convert an ORM JournalEntry to a JournalEntryResponse."""
+    return JournalEntryResponse(
+        id=entry.id,
+        text=entry.text,
+        analysis=analysis if analysis is not None else entry.analysis,
+        created_at=entry.created_at.isoformat(),
+    )
 
 
 @app.get("/health")
@@ -73,14 +88,9 @@ def analyze_journal(
         logger.error("Unexpected error during analysis: %s", exc)
         raise HTTPException(status_code=500, detail="Internal server error") from exc
 
-    entry = save_entry(db, request.text, analysis.model_dump())
-
-    return JournalEntryResponse(
-        id=entry.id,
-        text=entry.text,
-        analysis=analysis.model_dump(),
-        created_at=entry.created_at.isoformat(),
-    )
+    analysis_dict = analysis.model_dump()
+    entry = save_entry(db, request.text, analysis_dict)
+    return _entry_to_response(entry, analysis_dict)
 
 
 @app.get("/journal/history", response_model=list[JournalEntryResponse])
@@ -90,15 +100,26 @@ def journal_history(
     db: Session = Depends(get_db),
 ) -> list[JournalEntryResponse]:
     entries = get_entries(db, skip=skip, limit=limit)
-    return [
-        JournalEntryResponse(
-            id=e.id,
-            text=e.text,
-            analysis=e.analysis,
-            created_at=e.created_at.isoformat(),
-        )
-        for e in entries
-    ]
+    return [_entry_to_response(e) for e in entries]
+
+
+@app.delete("/journal/all")
+def journal_clear_all(db: Session = Depends(get_db)) -> dict[str, int]:
+    """Delete all journal entries. Returns the count of deleted rows."""
+    deleted = clear_entries(db)
+    logger.info("Cleared all journal entries (%d rows)", deleted)
+    return {"deleted": deleted}
+
+
+@app.get("/journal/search", response_model=list[JournalEntryResponse])
+def journal_search(
+    q: str = Query(..., min_length=2, description="Search conceptually similar entries"),
+    limit: int = Query(5, ge=1, le=20),
+    db: Session = Depends(get_db),
+) -> list[JournalEntryResponse]:
+    """Semantic search over past journal entries."""
+    entries = search_similar_entries(db, query_text=q, limit=limit)
+    return [_entry_to_response(e) for e in entries]
 
 
 @app.get("/journal/{entry_id}", response_model=JournalEntryResponse)
@@ -109,10 +130,4 @@ def journal_detail(
     entry = get_entry_by_id(db, entry_id)
     if entry is None:
         raise HTTPException(status_code=404, detail="Journal entry not found")
-
-    return JournalEntryResponse(
-        id=entry.id,
-        text=entry.text,
-        analysis=entry.analysis,
-        created_at=entry.created_at.isoformat(),
-    )
+    return _entry_to_response(entry)

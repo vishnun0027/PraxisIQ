@@ -3,6 +3,8 @@ Page 2 — Dashboard
 View history, trends, charts, and past analysis results.
 """
 
+from collections import Counter
+
 import streamlit as st
 import httpx
 import sys
@@ -18,6 +20,7 @@ from ui.helpers import (
     make_emotion_frequency,
     API_BASE,
     EMOTION_COLORS,
+    EMOTION_ICONS,
 )
 
 inject_css()
@@ -26,13 +29,17 @@ inject_css()
 st.markdown('<p class="gradient-header">📊 Dashboard</p>', unsafe_allow_html=True)
 st.markdown('<p class="tagline">Your emotional journey at a glance</p>', unsafe_allow_html=True)
 
-# --- Fetch history ---
-try:
+
+# --- Fetch history (cached for 30s to avoid re-fetching on every widget rerun) ---
+@st.cache_data(ttl=30)
+def fetch_history() -> list[dict]:
     resp = httpx.get(f"{API_BASE}/journal/history?limit=50", timeout=10.0)
-    if resp.status_code != 200:
-        st.error("Failed to load history from API.")
-        st.stop()
-    entries = resp.json()
+    resp.raise_for_status()
+    return resp.json()
+
+
+try:
+    entries = fetch_history()
 except httpx.ConnectError:
     st.error("Cannot connect to API server. Is it running on port 8000?")
     st.stop()
@@ -58,7 +65,6 @@ avg_intensity = sum(
 latest_intensity = entries[0].get("analysis", {}).get("emotional_intensity", 0)
 
 # Collect all emotions across entries
-from collections import Counter
 emotion_counter: Counter[str] = Counter()
 for e in entries:
     for em in e.get("analysis", {}).get("detected_emotions", []):
@@ -82,7 +88,6 @@ with col_s3:
         unsafe_allow_html=True,
     )
 with col_s4:
-    from ui.helpers import EMOTION_ICONS
     icon = EMOTION_ICONS.get(top_emotion, "")
     st.markdown(
         f'<p class="stat-number">{icon}</p><p class="stat-label">Top: {top_emotion}</p>',

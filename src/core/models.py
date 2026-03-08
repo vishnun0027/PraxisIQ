@@ -14,6 +14,6 @@ class JournalEntry(Base):
     analysis: Mapped[dict] = mapped_column(JSON, nullable=False)
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True),
-        default=datetime.datetime.now(datetime.UTC),
+        default=lambda: datetime.datetime.now(datetime.UTC),
         nullable=False,
     )
