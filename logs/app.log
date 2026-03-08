@@ -64,3 +64,73 @@
 2026-03-07 08:00:39,224 | INFO | src.main | lifespan:21 | Initializing database tables
 2026-03-07 08:00:39,225 | INFO | src.main | lifespan:23 | Database ready
 2026-03-07 08:00:39,235 | INFO | src.main | journal_clear_all:108 | Cleared all journal entries (5 rows)
+2026-03-08 13:52:21,079 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-08 13:52:21,308 | INFO | src.core.database | init_db:75 | Database tables created successfully
+2026-03-08 13:52:21,308 | INFO | src.main | lifespan:23 | Initializing Qdrant VectorDB
+2026-03-08 13:52:21,419 | INFO | src.core.database | init_qdrant:49 | Creating Qdrant collection: journal_entries
+2026-03-08 13:52:21,659 | INFO | src.main | lifespan:25 | Application ready
+2026-03-08 14:04:44,963 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-08 14:04:45,041 | INFO | src.core.database | init_db:75 | Database tables created successfully
+2026-03-08 14:04:45,041 | INFO | src.main | lifespan:23 | Initializing Qdrant VectorDB
+2026-03-08 14:04:45,368 | INFO | src.core.database | init_qdrant:55 | Qdrant collection journal_entries already exists
+2026-03-08 14:04:45,369 | INFO | src.main | lifespan:25 | Application ready
+2026-03-08 14:49:48,799 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-08 14:49:48,845 | INFO | src.core.database | init_db:75 | Database tables created successfully
+2026-03-08 14:49:48,845 | INFO | src.main | lifespan:23 | Initializing Qdrant VectorDB
+2026-03-08 14:49:49,561 | INFO | src.core.database | init_qdrant:55 | Qdrant collection journal_entries already exists
+2026-03-08 14:49:49,561 | INFO | src.main | lifespan:25 | Application ready
+2026-03-08 15:00:49,000 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-08 15:00:49,101 | INFO | src.core.database | init_db:75 | Database tables created successfully
+2026-03-08 15:00:49,102 | INFO | src.main | lifespan:23 | Initializing Qdrant VectorDB
+2026-03-08 15:00:49,583 | INFO | src.core.database | init_qdrant:55 | Qdrant collection journal_entries already exists
+2026-03-08 15:00:49,584 | INFO | src.main | lifespan:25 | Application ready
+2026-03-08 15:06:39,393 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-08 15:06:39,435 | INFO | src.core.database | init_db:75 | Database tables created successfully
+2026-03-08 15:06:39,435 | INFO | src.main | lifespan:23 | Initializing Qdrant VectorDB
+2026-03-08 15:06:39,890 | INFO | src.core.database | init_qdrant:55 | Qdrant collection journal_entries already exists
+2026-03-08 15:06:39,891 | INFO | src.main | lifespan:25 | Application ready
+2026-03-08 15:07:00,962 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-08 15:07:01,002 | INFO | src.core.database | init_db:75 | Database tables created successfully
+2026-03-08 15:07:01,002 | INFO | src.main | lifespan:23 | Initializing Qdrant VectorDB
+2026-03-08 15:07:01,278 | INFO | src.core.database | init_qdrant:55 | Qdrant collection journal_entries already exists
+2026-03-08 15:07:01,278 | INFO | src.main | lifespan:25 | Application ready
+2026-03-08 15:07:19,067 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-08 15:07:19,291 | INFO | src.core.database | init_db:75 | Database tables created successfully
+2026-03-08 15:07:19,292 | INFO | src.main | lifespan:23 | Initializing Qdrant VectorDB
+2026-03-08 15:07:19,911 | INFO | src.core.database | init_qdrant:55 | Qdrant collection journal_entries already exists
+2026-03-08 15:07:19,911 | INFO | src.main | lifespan:25 | Application ready
+2026-03-08 15:07:44,551 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-08 15:07:44,605 | INFO | src.core.database | init_db:75 | Database tables created successfully
+2026-03-08 15:07:44,606 | INFO | src.main | lifespan:23 | Initializing Qdrant VectorDB
+2026-03-08 15:07:44,904 | INFO | src.core.database | init_qdrant:55 | Qdrant collection journal_entries already exists
+2026-03-08 15:07:44,905 | INFO | src.main | lifespan:25 | Application ready
+2026-03-08 15:08:04,706 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-08 15:08:04,801 | INFO | src.core.database | init_db:75 | Database tables created successfully
+2026-03-08 15:08:04,801 | INFO | src.main | lifespan:23 | Initializing Qdrant VectorDB
+2026-03-08 15:08:08,257 | INFO | src.core.database | init_qdrant:55 | Qdrant collection journal_entries already exists
+2026-03-08 15:08:08,257 | INFO | src.main | lifespan:25 | Application ready
+2026-03-08 15:08:31,256 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-08 15:08:31,335 | INFO | src.core.database | init_db:75 | Database tables created successfully
+2026-03-08 15:08:31,336 | INFO | src.main | lifespan:23 | Initializing Qdrant VectorDB
+2026-03-08 15:08:31,725 | INFO | src.core.database | init_qdrant:55 | Qdrant collection journal_entries already exists
+2026-03-08 15:08:31,726 | INFO | src.main | lifespan:25 | Application ready
+2026-03-08 15:14:57,307 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-08 15:14:57,344 | INFO | src.core.database | init_db:75 | Database tables created successfully
+2026-03-08 15:14:57,344 | INFO | src.main | lifespan:23 | Initializing vector store
+2026-03-08 15:14:57,667 | INFO | src.core.database | init_qdrant:55 | Qdrant collection journal_entries already exists
+2026-03-08 15:14:57,668 | INFO | src.main | lifespan:25 | Application ready
+2026-03-08 15:15:20,002 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-08 15:15:20,076 | INFO | src.core.database | init_db:75 | Database tables created successfully
+2026-03-08 15:15:20,077 | INFO | src.main | lifespan:23 | Initializing vector store
+2026-03-08 15:15:20,514 | INFO | src.core.database | init_qdrant:55 | Qdrant collection journal_entries already exists
+2026-03-08 15:15:20,515 | INFO | src.main | lifespan:25 | Application ready
+2026-03-08 15:15:40,539 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-08 15:15:40,607 | INFO | src.core.database | init_db:75 | Database tables created successfully
+2026-03-08 15:15:40,608 | INFO | src.main | lifespan:23 | Initializing vector store
+2026-03-08 15:15:41,007 | INFO | src.core.database | init_qdrant:55 | Qdrant collection journal_entries already exists
+2026-03-08 15:15:41,008 | INFO | src.main | lifespan:25 | Application ready
+2026-03-08 15:16:05,290 | INFO | src.main | lifespan:21 | Initializing database tables
+2026-03-08 15:16:05,425 | INFO | src.core.database | init_db:75 | Database tables created successfully
+2026-03-08 15:16:05,426 | INFO | src.main | lifespan:23 | Initializing vector store
+2026-03-08 15:16:06,024 | INFO | src.core.database | init_qdrant:55 | Qdrant collection journal_entries already exists
+2026-03-08 15:16:06,024 | INFO | src.main | lifespan:25 | Application ready

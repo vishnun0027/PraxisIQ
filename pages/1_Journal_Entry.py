@@ -1,6 +1,5 @@
 """
-Page 1 — Journal Entry (Input)
-Write and submit journal entries for AI analysis.
+Journal Entry page — write and submit a new entry for AI analysis.
 """
 
 import streamlit as st
@@ -57,19 +56,19 @@ if analyze_clicked and entry_text.strip():
                 st.session_state.last_text = data["text"]
                 st.toast("✅ Analysis complete!", icon="🧠")
             elif resp.status_code == 422:
-                st.error(f"Validation error: {resp.json().get('detail', 'Invalid input')}")
+                st.error("Your entry couldn't be processed. Please try writing it a bit differently.")
             elif resp.status_code == 502:
-                st.error("The AI model returned an invalid response. Please try again.")
+                st.error("The analysis returned an unexpected result. Please try again.")
             elif resp.status_code == 503:
-                st.error("Analysis service temporarily unavailable. Please try again shortly.")
+                st.error("Analysis is temporarily unavailable. Please try again in a moment.")
             else:
-                st.error(f"Unexpected error (HTTP {resp.status_code})")
+                st.error("Something went wrong. Please try again.")
         except httpx.ConnectError:
-            st.error("Cannot connect to API server. Is it running on port 8000?")
+            st.error("Could not connect to the app. Please make sure everything is running.")
         except httpx.TimeoutException:
-            st.error("Request timed out — the LLM may need more time.")
-        except Exception as exc:
-            st.error(f"Something went wrong: {exc}")
+            st.error("This is taking longer than usual. Please try again — the AI may be busy.")
+        except Exception:
+            st.error("Something went wrong. Please try again.")
 elif analyze_clicked:
     st.warning("Please write something before analyzing.")
 

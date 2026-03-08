@@ -20,7 +20,7 @@ logger = get_logger(__name__)
 async def lifespan(application: FastAPI) -> AsyncGenerator[None, None]:
     logger.info("Initializing database tables")
     init_db()
-    logger.info("Initializing Qdrant VectorDB")
+    logger.info("Initializing vector store")
     init_qdrant()
     logger.info("Application ready")
     yield

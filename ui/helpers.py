@@ -232,7 +232,7 @@ def make_history_trend(entries: list[dict]) -> go.Figure | None:
         **_LAYOUT, height=300,
         xaxis=dict(gridcolor="rgba(255,255,255,0.04)", linecolor="rgba(255,255,255,0.1)"),
         yaxis=dict(range=[0, 10.5], dtick=2, gridcolor="rgba(255,255,255,0.06)",
-                   linecolor="rgba(255,255,255,0.1)", title=dict(text="Intensity", font=dict(size=11))),
+                   linecolor="rgba(255,255,255,0.1)", title=dict(text="Mood Level", font=dict(size=11))),
         hovermode="x unified",
     )
     return fig
@@ -260,7 +260,7 @@ def make_emotion_frequency(entries: list[dict]) -> go.Figure | None:
     fig.update_layout(
         **_LAYOUT, height=280,
         xaxis=dict(gridcolor="rgba(255,255,255,0.04)"),
-        yaxis=dict(gridcolor="rgba(255,255,255,0.06)", title=dict(text="Count", font=dict(size=11))),
+        yaxis=dict(gridcolor="rgba(255,255,255,0.06)", title=dict(text="Times", font=dict(size=11))),
     )
     return fig
 
@@ -293,11 +293,11 @@ def render_analysis(analysis: dict, key_prefix: str = "main") -> None:
         if detected:
             st.plotly_chart(make_emotion_radar(detected), use_container_width=True, config={"displayModeBar": False}, key=f"{key_prefix}_radar")
     with col2:
-        st.markdown('<p class="section-title">📊 Intensity</p>', unsafe_allow_html=True)
+        st.markdown('<p class="section-title">📊 How you\'re feeling</p>', unsafe_allow_html=True)
         st.plotly_chart(make_intensity_gauge(intensity), use_container_width=True, config={"displayModeBar": False}, key=f"{key_prefix}_gauge")
 
     st.markdown(
-        '<p class="section-title">🧠 Emotion Summary</p>'
+        '<p class="section-title">📝 What you\'re feeling</p>'
         f'<p class="card-text">{analysis.get("emotion_summary", "")}</p>',
         unsafe_allow_html=True,
     )
@@ -305,11 +305,11 @@ def render_analysis(analysis: dict, key_prefix: str = "main") -> None:
     col3, col4 = st.columns(2)
     with col3:
         distortions = analysis.get("cognitive_distortions", [])
-        content = distortion_chips_html(distortions) if distortions else '<span class="muted-text">None detected</span>'
-        st.markdown('<p class="section-title">⚠️ Cognitive Distortions</p>' + content, unsafe_allow_html=True)
+        content = distortion_chips_html(distortions) if distortions else '<span class="muted-text">None spotted — good job! 🌟</span>'
+        st.markdown('<p class="section-title">⚠️ Thinking Patterns</p>' + content, unsafe_allow_html=True)
     with col4:
         st.markdown(
-            '<p class="section-title">🔍 Root Cause</p>'
+            '<p class="section-title">🤔 What might be behind this</p>'
             f'<p class="card-text-sm">{analysis.get("root_cause_analysis", "")}</p>',
             unsafe_allow_html=True,
         )
@@ -322,7 +322,7 @@ def render_analysis(analysis: dict, key_prefix: str = "main") -> None:
     col5, col6 = st.columns(2)
     with col5:
         st.markdown(
-            '<p class="section-title">💡 Cognitive Reframing</p>'
+            '<p class="section-title">💡 A New Perspective</p>'
             f'<p class="card-text-italic">"{analysis.get("reframing", "")}"</p>',
             unsafe_allow_html=True,
         )

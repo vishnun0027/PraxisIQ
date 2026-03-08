@@ -1,6 +1,5 @@
 """
-Page 2 — Dashboard
-View history, trends, charts, and past analysis results.
+Dashboard page — view emotional trends, charts, and past entries.
 """
 
 from collections import Counter
@@ -41,10 +40,10 @@ def fetch_history() -> list[dict]:
 try:
     entries = fetch_history()
 except httpx.ConnectError:
-    st.error("Cannot connect to API server. Is it running on port 8000?")
+    st.error("Could not connect to the app. Please make sure everything is running.")
     st.stop()
-except Exception as exc:
-    st.error(f"Error: {exc}")
+except Exception:
+    st.error("Something went wrong loading your journal. Please refresh the page.")
     st.stop()
 
 if not entries:
@@ -79,12 +78,12 @@ with col_s1:
     )
 with col_s2:
     st.markdown(
-        f'<p class="stat-number">{avg_intensity:.1f}</p><p class="stat-label">Avg Intensity</p>',
+        f'<p class="stat-number">{avg_intensity:.1f}</p><p class="stat-label">Avg Mood Level</p>',
         unsafe_allow_html=True,
     )
 with col_s3:
     st.markdown(
-        f'<p class="stat-number">{latest_intensity}</p><p class="stat-label">Latest Intensity</p>',
+        f'<p class="stat-number">{latest_intensity}</p><p class="stat-label">Latest Mood</p>',
         unsafe_allow_html=True,
     )
 with col_s4:

@@ -45,8 +45,8 @@ with col2:
 
 with col3:
     st.markdown(
-        '<p class="section-title">🔍 Semantic Search</p>'
-        '<p class="card-text-sm">Find conceptually similar past entries based on feelings, situations, or abstract topics.</p>',
+        '<p class="section-title">🔍 Find Similar Moments</p>'
+        '<p class="card-text-sm">Describe a feeling or situation and we\'ll surface the most relevant past entries that match.</p>',
         unsafe_allow_html=True,
     )
-    st.page_link("pages/3_Semantic_Search.py", label="🔍 Search Entries", icon="🔍")
+    st.page_link("pages/3_Semantic_Search.py", label="🔍 Find Similar Moments", icon="🔍")

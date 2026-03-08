@@ -28,9 +28,8 @@ def save_entry(db: Session, text: str, analysis: dict) -> JournalEntry:
         )
         qdrant.upsert(collection_name="journal_entries", points=[point])
     except Exception as exc:
-        # We don't want a vector DB failure to break the primary Postgres save
-        # but in production we'd log this properly or queue for retry.
-        print(f"Warning: Failed to sync entry {entry.id} to Qdrant: {exc}")
+        # Vector store sync is best-effort; a failure should not break the primary save.
+        print(f"Warning: Failed to sync entry {entry.id} to vector store: {exc}")
 
     return entry
 
@@ -56,13 +55,12 @@ def clear_entries(db: Session) -> int:
 
     try:
         qdrant = get_qdrant_client()
-        # The easiest way to clear Qdrant is to delete and recreate the collection.
-        # But we can also use an empty filter payload to delete everything.
+        # Delete and recreate the collection to clear all vectors.
         from src.core.database import init_qdrant
         qdrant.delete_collection("journal_entries")
         init_qdrant("journal_entries")
     except Exception as exc:
-        print(f"Warning: Failed to clear Qdrant: {exc}")
+        print(f"Warning: Failed to clear vector store: {exc}")
 
     return result.rowcount
 
@@ -72,12 +70,12 @@ def search_similar_entries(db: Session, query_text: str, limit: int = 5) -> list
     qdrant = get_qdrant_client()
     query_vector = get_embedding(query_text)
 
-    search_result = qdrant.search(
+    search_result = qdrant.query_points(
         collection_name="journal_entries",
-        query_vector=query_vector,
+        query=query_vector,
         limit=limit,
-    )
-    
+    ).points
+
     if not search_result:
         return []
 

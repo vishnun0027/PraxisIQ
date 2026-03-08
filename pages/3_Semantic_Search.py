@@ -1,6 +1,5 @@
 """
-Page 3 — Semantic Search
-Find conceptually similar past journal entries using Qdrant VectorDB.
+Find Similar Moments page — surface past entries similar to the current query.
 """
 
 import streamlit as st
@@ -14,13 +13,13 @@ from ui.helpers import inject_css, render_analysis, emotion_chips_html, format_d
 inject_css()
 
 # --- Header ---
-st.markdown('<p class="gradient-header">🔍 Semantic Search</p>', unsafe_allow_html=True)
-st.markdown('<p class="tagline">Find past entries by concept, feeling, or situation</p>', unsafe_allow_html=True)
+st.markdown('<p class="gradient-header">🔍 Find Similar Moments</p>', unsafe_allow_html=True)
+st.markdown('<p class="tagline">Discover past entries that match how you\'re feeling now</p>', unsafe_allow_html=True)
 
 st.markdown(
     '<p class="card-text-sm" style="text-align: center; color: #94a3b8; margin-bottom: 2rem;">'
-    'Powered by <strong>all-MiniLM-L6-v2</strong> embeddings and <strong>Qdrant VectorDB</strong>. '
-    'Search for concepts like <em>"feeling like an imposter at work"</em> or <em>"arguing with my partner"</em>.'
+    'Describe a feeling, situation, or thought and we\'ll find your most relevant past reflections. '
+    'Try things like <em>"feeling like an imposter at work"</em> or <em>"arguing with my partner"</em>.'
     '</p>',
     unsafe_allow_html=True,
 )
@@ -33,7 +32,7 @@ query = st.text_input(
 )
 
 if query and len(query) >= 2:
-    with st.spinner("Searching vectors in Qdrant..."):
+    with st.spinner("🔍 Finding similar entries..."):
         try:
             resp = httpx.get(
                 f"{API_BASE}/journal/search",
@@ -43,16 +42,16 @@ if query and len(query) >= 2:
             if resp.status_code == 200:
                 results = resp.json()
             else:
-                st.error(f"Search failed: {resp.text}")
+                st.error("Search is temporarily unavailable. Please try again shortly.")
                 results = []
-        except Exception as exc:
-            st.error(f"Error connecting to API: {exc}")
+        except Exception:
+            st.error("Could not connect to the app. Please make sure the app is running.")
             results = []
 
     if not results:
         st.info("No conceptually similar entries found.")
     else:
-        st.markdown(f'<p class="section-title">Found {len(results)} related entries</p>', unsafe_allow_html=True)
+        st.markdown(f'<p class="section-title">Found {len(results)} matching entr{"y" if len(results) == 1 else "ies"}</p>', unsafe_allow_html=True)
         st.divider()
 
         for idx, entry in enumerate(results):
