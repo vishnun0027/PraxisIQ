@@ -134,3 +134,165 @@
 2026-03-08 15:16:05,426 | INFO | src.main | lifespan:23 | Initializing vector store
 2026-03-08 15:16:06,024 | INFO | src.core.database | init_qdrant:55 | Qdrant collection journal_entries already exists
 2026-03-08 15:16:06,024 | INFO | src.main | lifespan:25 | Application ready
+2026-05-13 17:56:00,085 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-13 17:56:00,137 | WARNING | src.core.database | init_db:54 | Database not ready (attempt 1/5): (psycopg.OperationalError) connection is bad: connection to server at "2406:da18:167b:f900:6b53:f83e:2809:1e79", port 5432 failed: Network is unreachable
+	Is the server running on that host and accepting TCP/IP connections?
+(Background on this error at: https://sqlalche.me/e/20/e3q8) — retrying in 2s
+2026-05-13 17:56:02,168 | WARNING | src.core.database | init_db:54 | Database not ready (attempt 2/5): (psycopg.OperationalError) connection is bad: connection to server at "2406:da18:167b:f900:6b53:f83e:2809:1e79", port 5432 failed: Network is unreachable
+	Is the server running on that host and accepting TCP/IP connections?
+(Background on this error at: https://sqlalche.me/e/20/e3q8) — retrying in 2s
+2026-05-13 17:56:04,199 | WARNING | src.core.database | init_db:54 | Database not ready (attempt 3/5): (psycopg.OperationalError) connection is bad: connection to server at "2406:da18:167b:f900:6b53:f83e:2809:1e79", port 5432 failed: Network is unreachable
+	Is the server running on that host and accepting TCP/IP connections?
+(Background on this error at: https://sqlalche.me/e/20/e3q8) — retrying in 2s
+2026-05-13 17:56:06,222 | WARNING | src.core.database | init_db:54 | Database not ready (attempt 4/5): (psycopg.OperationalError) connection is bad: connection to server at "2406:da18:167b:f900:6b53:f83e:2809:1e79", port 5432 failed: Network is unreachable
+	Is the server running on that host and accepting TCP/IP connections?
+(Background on this error at: https://sqlalche.me/e/20/e3q8) — retrying in 2s
+2026-05-13 17:57:18,556 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-13 17:57:18,635 | WARNING | src.core.database | init_db:54 | Database not ready (attempt 1/5): (psycopg.OperationalError) connection is bad: connection to server at "2406:da18:167b:f900:6b53:f83e:2809:1e79", port 5432 failed: Network is unreachable
+	Is the server running on that host and accepting TCP/IP connections?
+(Background on this error at: https://sqlalche.me/e/20/e3q8) — retrying in 2s
+2026-05-13 17:57:20,688 | WARNING | src.core.database | init_db:54 | Database not ready (attempt 2/5): (psycopg.OperationalError) connection is bad: connection to server at "2406:da18:167b:f900:6b53:f83e:2809:1e79", port 5432 failed: Network is unreachable
+	Is the server running on that host and accepting TCP/IP connections?
+(Background on this error at: https://sqlalche.me/e/20/e3q8) — retrying in 2s
+2026-05-13 17:57:22,714 | WARNING | src.core.database | init_db:54 | Database not ready (attempt 3/5): (psycopg.OperationalError) connection is bad: connection to server at "2406:da18:167b:f900:6b53:f83e:2809:1e79", port 5432 failed: Network is unreachable
+	Is the server running on that host and accepting TCP/IP connections?
+(Background on this error at: https://sqlalche.me/e/20/e3q8) — retrying in 2s
+2026-05-13 17:57:26,239 | WARNING | src.core.database | init_db:54 | Database not ready (attempt 4/5): (psycopg.OperationalError) connection is bad: connection to server at "2406:da18:167b:f900:6b53:f83e:2809:1e79", port 5432 failed: Network is unreachable
+	Is the server running on that host and accepting TCP/IP connections?
+(Background on this error at: https://sqlalche.me/e/20/e3q8) — retrying in 2s
+2026-05-13 18:07:28,239 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-13 18:07:33,263 | INFO | src.core.database | init_db:46 | pgvector extension verified/created successfully
+2026-05-13 18:07:33,568 | INFO | src.core.database | init_db:49 | Database tables created successfully
+2026-05-13 18:07:33,568 | INFO | src.main | lifespan:28 | Application ready
+2026-05-13 18:10:06,687 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-13 18:10:08,031 | INFO | src.core.database | init_db:46 | pgvector extension verified/created successfully
+2026-05-13 18:10:08,320 | INFO | src.core.database | init_db:49 | Database tables created successfully
+2026-05-13 18:10:08,320 | INFO | src.main | lifespan:28 | Application ready
+2026-05-13 18:10:59,148 | ERROR | src.analyzer | analyze:126 | Failed to analyze journal entry: Error code: 400 - {'error': {'message': 'tool call validation failed: parameters for tool JournalAnalysis did not match schema: errors: [`/detected_emotions/1`: value must be one of "joy", "gratitude", "calm", "hope", "love", "excitement", "pride", "sadness", "anxiety", "stress", "anger", "frustration", "fear", "disgust", "shame", "guilt", "loneliness", "jealousy", "burnout", "overwhelm"]', 'type': 'invalid_request_error', 'code': 'tool_use_failed', 'failed_generation': '<function=JournalAnalysis>{"action_steps": ["Reflect on past challenges and how they were overcome", "Celebrate small victories to build confidence"], "cognitive_distortions": [], "crisis_detected": false, "detected_emotions": ["pride", "relief"], "emotion_summary": "Relieved and proud after overcoming a challenge", "emotional_intensity": 8, "motivational_guidance": "You\'ve demonstrated your ability to learn and persevere, keep building on this momentum", "reframing": "This experience shows that with persistence, you can overcome complex problems and achieve a sense of pride and fulfillment", "root_cause_analysis": "Fear of not understanding a key concept was causing stress, but overcoming it has boosted self-confidence"}</function>'}}
+2026-05-13 18:12:23,567 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-13 18:12:24,673 | INFO | src.core.database | init_db:46 | pgvector extension verified/created successfully
+2026-05-13 18:12:24,897 | INFO | src.core.database | init_db:49 | Database tables created successfully
+2026-05-13 18:12:24,897 | INFO | src.main | lifespan:28 | Application ready
+2026-05-14 15:12:43,657 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-14 15:12:45,670 | INFO | src.core.database | init_db:46 | pgvector extension verified/created successfully
+2026-05-14 15:12:45,921 | INFO | src.core.database | init_db:49 | Database tables created successfully
+2026-05-14 15:12:45,922 | INFO | src.main | lifespan:28 | Application ready
+2026-05-14 15:13:40,172 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-14 15:13:43,195 | INFO | src.core.database | init_db:46 | pgvector extension verified/created successfully
+2026-05-14 15:13:43,466 | INFO | src.core.database | init_db:49 | Database tables created successfully
+2026-05-14 15:13:43,466 | INFO | src.main | lifespan:28 | Application ready
+2026-05-14 15:22:39,122 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-14 15:22:39,123 | INFO | src.main | lifespan:28 | Application ready
+2026-05-14 15:22:39,139 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-14 15:22:39,140 | INFO | src.main | lifespan:28 | Application ready
+2026-05-14 15:22:46,975 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-14 15:22:46,977 | INFO | src.main | lifespan:28 | Application ready
+2026-05-14 15:22:47,002 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-14 15:22:47,003 | INFO | src.main | lifespan:28 | Application ready
+2026-05-14 15:22:47,026 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-14 15:22:47,027 | INFO | src.main | lifespan:28 | Application ready
+2026-05-14 15:22:47,051 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-14 15:22:47,052 | INFO | src.main | lifespan:28 | Application ready
+2026-05-14 15:22:47,139 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-14 15:22:47,140 | INFO | src.main | lifespan:28 | Application ready
+2026-05-14 15:22:47,164 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-14 15:22:47,165 | INFO | src.main | lifespan:28 | Application ready
+2026-05-14 15:22:47,216 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-14 15:22:47,217 | INFO | src.main | lifespan:28 | Application ready
+2026-05-14 15:22:47,223 | INFO | src.main | journal_clear_all:113 | Cleared all journal entries (5 rows)
+2026-05-14 15:26:23,181 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-14 15:26:23,183 | INFO | src.main | lifespan:28 | Application ready
+2026-05-14 15:26:23,205 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-14 15:26:23,206 | INFO | src.main | lifespan:28 | Application ready
+2026-05-14 15:26:30,873 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-14 15:26:30,874 | INFO | src.main | lifespan:28 | Application ready
+2026-05-14 15:26:30,887 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-14 15:26:30,888 | INFO | src.main | lifespan:28 | Application ready
+2026-05-14 15:26:30,901 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-14 15:26:30,902 | INFO | src.main | lifespan:28 | Application ready
+2026-05-14 15:26:30,919 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-14 15:26:30,920 | INFO | src.main | lifespan:28 | Application ready
+2026-05-14 15:26:30,983 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-14 15:26:30,984 | INFO | src.main | lifespan:28 | Application ready
+2026-05-14 15:26:31,001 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-14 15:26:31,002 | INFO | src.main | lifespan:28 | Application ready
+2026-05-14 15:26:31,061 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-14 15:26:31,062 | INFO | src.main | lifespan:28 | Application ready
+2026-05-14 15:26:31,070 | INFO | src.main | journal_clear_all:113 | Cleared all journal entries (5 rows)
+2026-05-14 15:52:06,832 | WARNING | src.core.database | init_db:54 | Database not ready (attempt 1/5): (psycopg.OperationalError) connection failed: connection to server at "127.0.0.1", port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+(Background on this error at: https://sqlalche.me/e/20/e3q8) — retrying in 2s
+2026-05-14 15:52:08,834 | WARNING | src.core.database | init_db:54 | Database not ready (attempt 2/5): (psycopg.OperationalError) connection failed: connection to server at "127.0.0.1", port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+(Background on this error at: https://sqlalche.me/e/20/e3q8) — retrying in 2s
+2026-05-14 15:52:10,837 | WARNING | src.core.database | init_db:54 | Database not ready (attempt 3/5): (psycopg.OperationalError) connection failed: connection to server at "127.0.0.1", port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+(Background on this error at: https://sqlalche.me/e/20/e3q8) — retrying in 2s
+2026-05-14 15:52:12,839 | WARNING | src.core.database | init_db:54 | Database not ready (attempt 4/5): (psycopg.OperationalError) connection failed: connection to server at "127.0.0.1", port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+(Background on this error at: https://sqlalche.me/e/20/e3q8) — retrying in 2s
+2026-05-14 15:53:44,582 | INFO | src.core.database | init_db:46 | pgvector extension verified/created successfully
+2026-05-14 15:53:45,186 | INFO | src.core.database | init_db:49 | Database tables created successfully
+2026-05-14 15:53:45,187 | INFO | __main__ | run_collector:45 | Starting Telegram Journal Ingestion Routine...
+2026-05-14 15:53:47,123 | INFO | __main__ | run_collector:61 | Retrieved 2 pending updates.
+2026-05-14 15:53:47,308 | INFO | __main__ | run_collector:91 | Ingesting text entry (len=103) from authorized user
+2026-05-14 15:53:59,726 | INFO | __main__ | run_collector:124 | Acknowledging read state to Telegram up to Offset: 201174455
+2026-05-14 15:54:00,674 | INFO | __main__ | run_collector:131 | Ingestion completed. Saved 1 entries safely to Supabase.
+2026-05-14 16:02:10,550 | INFO | src.core.database | init_db:46 | pgvector extension verified/created successfully
+2026-05-14 16:02:10,796 | INFO | src.core.database | init_db:49 | Database tables created successfully
+2026-05-14 16:02:10,796 | INFO | __main__ | run_collector:45 | Starting Telegram Journal Ingestion Routine...
+2026-05-14 16:02:11,456 | INFO | __main__ | run_collector:61 | Retrieved 1 pending updates.
+2026-05-14 16:02:11,954 | INFO | __main__ | run_collector:91 | Ingesting text entry (len=103) from authorized user
+2026-05-14 16:02:20,654 | INFO | __main__ | run_collector:127 | Acknowledging read state to Telegram up to Offset: 201174456
+2026-05-14 16:02:21,336 | INFO | __main__ | run_collector:134 | Ingestion completed. Saved 1 entries safely to Supabase.
+2026-05-15 17:25:01,954 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-15 17:25:01,963 | INFO | src.main | lifespan:28 | Application ready
+2026-05-15 17:25:02,015 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-15 17:25:02,016 | INFO | src.main | lifespan:28 | Application ready
+2026-05-15 17:25:11,465 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-15 17:25:11,466 | INFO | src.main | lifespan:28 | Application ready
+2026-05-15 17:25:11,495 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-15 17:25:11,496 | INFO | src.main | lifespan:28 | Application ready
+2026-05-15 17:25:11,526 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-15 17:25:11,528 | INFO | src.main | lifespan:28 | Application ready
+2026-05-15 17:25:11,571 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-15 17:25:11,572 | INFO | src.main | lifespan:28 | Application ready
+2026-05-15 17:25:11,749 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-15 17:25:11,750 | INFO | src.main | lifespan:28 | Application ready
+2026-05-15 17:25:11,793 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-15 17:25:11,794 | INFO | src.main | lifespan:28 | Application ready
+2026-05-15 17:25:11,881 | INFO | src.main | lifespan:26 | Initializing database tables
+2026-05-15 17:25:11,883 | INFO | src.main | lifespan:28 | Application ready
+2026-05-15 17:25:11,905 | INFO | src.main | journal_clear_all:113 | Cleared all journal entries (5 rows)
+2026-05-15 17:54:10,828 | INFO | src.core.database | init_db:46 | pgvector extension verified/created successfully
+2026-05-15 17:54:11,530 | INFO | src.core.database | init_db:49 | Database tables created successfully
+2026-05-15 17:54:11,531 | INFO | __main__ | run_collector:45 | Starting Telegram Journal Ingestion Routine...
+2026-05-15 17:54:12,225 | INFO | __main__ | run_collector:61 | Retrieved 1 pending updates.
+2026-05-15 17:54:13,031 | INFO | __main__ | run_collector:91 | Ingesting text entry (len=28) from authorized user
+2026-05-15 17:54:13,031 | INFO | __main__ | run_collector:109 | Routing new entry to JournalAnalyzer
+2026-05-15 17:54:29,348 | INFO | __main__ | run_collector:147 | Acknowledging read state to Telegram up to Offset: 201174457
+2026-05-15 17:54:29,912 | INFO | __main__ | run_collector:154 | Ingestion completed. Saved 1 entries safely to Supabase.
+2026-05-15 17:57:05,280 | INFO | src.core.database | init_db:46 | pgvector extension verified/created successfully
+2026-05-15 17:57:05,590 | INFO | src.core.database | init_db:49 | Database tables created successfully
+2026-05-15 17:57:05,816 | INFO | __main__ | run_weekly_report:33 | Found 4 entries for the weekly report.
+2026-05-15 17:57:06,105 | INFO | __main__ | run_weekly_report:59 | Generating report via Groq...
+2026-05-15 17:57:08,328 | INFO | __main__ | run_weekly_report:67 | Weekly report sent successfully.
+2026-05-15 18:00:33,823 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-15 18:00:33,825 | INFO | src.main | lifespan:27 | Application ready
+2026-05-15 18:00:33,875 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-15 18:00:33,879 | INFO | src.main | lifespan:27 | Application ready
+2026-05-15 18:00:40,908 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-15 18:00:40,909 | INFO | src.main | lifespan:27 | Application ready
+2026-05-15 18:00:40,936 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-15 18:00:40,937 | INFO | src.main | lifespan:27 | Application ready
+2026-05-15 18:00:40,962 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-15 18:00:40,963 | INFO | src.main | lifespan:27 | Application ready
+2026-05-15 18:00:40,996 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-15 18:00:40,998 | INFO | src.main | lifespan:27 | Application ready
+2026-05-15 18:00:41,099 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-15 18:00:41,101 | INFO | src.main | lifespan:27 | Application ready
+2026-05-15 18:00:41,137 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-15 18:00:41,139 | INFO | src.main | lifespan:27 | Application ready
+2026-05-15 18:00:41,222 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-15 18:00:41,223 | INFO | src.main | lifespan:27 | Application ready
+2026-05-15 18:00:41,238 | INFO | src.main | journal_clear_all:112 | Cleared all journal entries (5 rows)

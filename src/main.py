@@ -2,14 +2,18 @@ import json
 from contextlib import asynccontextmanager
 from collections.abc import AsyncGenerator
 
+from dotenv import load_dotenv
+load_dotenv(override=True)
+
+
 from fastapi import FastAPI, HTTPException, Depends, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ConfigDict, ValidationError
 from sqlalchemy.orm import Session
 
-from src.analyzer import JournalAnalyzer, JournalAnalysis
+from src.analyzer import JournalAnalyzer
 from src.core.crud import save_entry, get_entries, get_entry_by_id, clear_entries, search_similar_entries
-from src.core.database import get_db, init_db, init_qdrant
+from src.core.database import get_db, init_db
 from src.core.models import JournalEntry
 from src.core.logging import get_logger
 
@@ -20,13 +24,11 @@ logger = get_logger(__name__)
 async def lifespan(application: FastAPI) -> AsyncGenerator[None, None]:
     logger.info("Initializing database tables")
     init_db()
-    logger.info("Initializing vector store")
-    init_qdrant()
     logger.info("Application ready")
     yield
 
 
-app = FastAPI(title="AI Mental Clarity Journal API", lifespan=lifespan)
+app = FastAPI(title="PraxisIQ API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

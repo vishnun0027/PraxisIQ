@@ -1,8 +1,4 @@
-model_name: "gpt-oss:120b-cloud"
+model_name: "llama-3.3-70b-versatile"
 temperature: 0.0
-format: "json"
-timeout: 120
-num_predict: 2048
-num_ctx: 8192
-top_p: 0.9
-repeat_penalty: 1.1
+timeout: 60
+max_retries: 3

@@ -19,6 +19,6 @@ def get_embedding(text: str) -> list[float]:
     """
     model = _get_model()
     # model.encode returns a numpy array, we convert to a standard python list
-    # for compatibility with Qdrant client
+    # for compatibility with database drivers
     embedding = model.encode(text)
     return embedding.tolist()

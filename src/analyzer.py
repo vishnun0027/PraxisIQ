@@ -1,19 +1,17 @@
-import json
-import time
 from pathlib import Path
-from typing import Literal
 
 import yaml
-from langchain_ollama import ChatOllama
-from pydantic import BaseModel, Field, ValidationError
+from langchain_groq import ChatGroq
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+from pydantic import BaseModel, Field
 from src.core.logging import get_logger
 
 logger = get_logger(__name__)
 
-_llm_instance: ChatOllama | None = None
+_llm_instance: ChatGroq | None = None
 
 
-def _initialize_model() -> ChatOllama:
+def _initialize_model() -> ChatGroq:
     config_path = Path("config/llm_model.yaml")
 
     if not config_path.exists():
@@ -22,18 +20,15 @@ def _initialize_model() -> ChatOllama:
     with open(config_path, "r", encoding="utf-8") as file:
         config = yaml.safe_load(file)
 
-    return ChatOllama(
+    return ChatGroq(
         model=config["model_name"],
         temperature=config.get("temperature", 0.0),
-        format=config.get("format", "json"),
         timeout=config.get("timeout"),
-        num_predict=config.get("num_predict"),
-        top_p=config.get("top_p"),
-        repeat_penalty=config.get("repeat_penalty"),
+        max_retries=config.get("max_retries", 3),
     )
 
 
-def _get_llm() -> ChatOllama:
+def _get_llm() -> ChatGroq:
     """Lazily initialize the LLM singleton on first call."""
     global _llm_instance
     if _llm_instance is None:
@@ -46,18 +41,9 @@ class JournalAnalysis(BaseModel):
         description="Brief summary of the user's emotional state"
     )
 
-    detected_emotions: list[
-        Literal[
-            # Positive
-            "joy", "gratitude", "calm", "hope", "love",
-            "excitement", "pride",
-            # Negative
-            "sadness", "anxiety", "stress", "anger",
-            "frustration", "fear", "disgust", "shame",
-            "guilt", "loneliness", "jealousy", "burnout",
-            "overwhelm",
-        ]
-    ] = Field(description="List of detected emotions using only allowed values")
+    detected_emotions: list[str] = Field(
+        description="List of detected emotions (e.g. joy, sadness, anxiety, relief, pride, etc.)"
+    )
 
     emotional_intensity: int = Field(
         ge=1,
@@ -65,20 +51,9 @@ class JournalAnalysis(BaseModel):
         description="Overall emotional intensity score from 1 (low) to 10 (very high)",
     )
 
-    cognitive_distortions: list[
-        Literal[
-            "catastrophizing",
-            "all_or_nothing",
-            "overgeneralization",
-            "mind_reading",
-            "negative_filtering",
-            "emotional_reasoning",
-            "should_statements",
-            "labeling",
-            "personalization",
-            "magnification",
-        ]
-    ] = Field(description="Detected cognitive distortions using only allowed values")
+    cognitive_distortions: list[str] = Field(
+        description="Detected cognitive distortions (e.g. catastrophizing, all_or_nothing, etc.)"
+    )
 
     root_cause_analysis: str = Field(
         description="Likely psychological root cause of emotional state"
@@ -101,66 +76,59 @@ class JournalAnalysis(BaseModel):
 
 class JournalAnalyzer:
     def __init__(self) -> None:
-        self._llm = _get_llm()
+        # Use with_structured_output to automatically force Llama 3 to output valid JournalAnalysis schemas
+        self._llm = _get_llm().with_structured_output(JournalAnalysis)
 
     def _build_prompt(self, entry: str) -> str:
         return f"""
-You are a mental clarity assistant specialized in CBT-style structured analysis.
+You are the PraxisIQ assistant, specialized in CBT-style structured analysis.
 
-Return ONLY strict JSON.
-No markdown.
-No commentary.
-No additional keys.
-No trailing text.
-
-Allowed detected_emotions:
-["joy","gratitude","calm","hope","love","excitement","pride","sadness","anxiety","stress","anger","frustration","fear","disgust","shame","guilt","loneliness","jealousy","burnout","overwhelm"]
-
-Allowed cognitive_distortions:
-["catastrophizing","all_or_nothing","overgeneralization","mind_reading","negative_filtering","emotional_reasoning","should_statements","labeling","personalization","magnification"]
-
-Constraints:
-- emotional_intensity: integer 1-10
-- analysis_confidence: float 0-1
-- crisis_detected: true or false
-- Use only allowed literal values
-- Ensure valid JSON format
-
-Required structure:
-
-{{
-  "emotion_summary": string,
-  "detected_emotions": [string],
-  "emotional_intensity": integer,
-  "cognitive_distortions": [string],
-  "root_cause_analysis": string,
-  "action_steps": [string],
-  "reframing": string,
-  "motivational_guidance": string,
-  "crisis_detected": boolean,
-}}
+Analyze the following journal entry and structure the feedback according to the required schema.
+Accurately detect emotional labels, assign a severity rating (1-10), catch common cognitive distortions,
+outline root causes, offer practical actionable steps, frame the experience under a cognitive reframing lens, and note potential self-harm crises.
 
 Journal Entry:
+\"\"\"
 {entry.strip()}
+\"\"\"
 """
-
-    def _parse_response(self, content: str) -> JournalAnalysis:
-        parsed = json.loads(content)
-        return JournalAnalysis.model_validate(parsed)
 
     def analyze(self, entry: str, max_retries: int = 3) -> JournalAnalysis:
         if not entry or not entry.strip():
             raise ValueError("Journal entry must not be empty")
 
-        last_error: Exception | None = None
+        # invoke() now returns a validated JournalAnalysis model directly
+        try:
+            return self._llm.invoke(self._build_prompt(entry))
+        except Exception as exc:
+            logger.error("Failed to analyze journal entry: %s", exc)
+            raise RuntimeError("Failed to generate structured analysis via Groq") from exc
 
-        for attempt in range(max_retries):
-            response = self._llm.invoke(self._build_prompt(entry))
-
-            try:
-                return self._parse_response(response.content)
-            except (json.JSONDecodeError, ValidationError) as exc:
-                last_error = exc
-                time.sleep(0.5 * (2 ** attempt))  # Exponential back-off
-
-        raise RuntimeError("Failed to generate valid structured output") from last_error
+class ChatCopilot:
+    def __init__(self) -> None:
+        self._llm = _get_llm()
+        
+    def chat(self, chat_history: list, new_message: str) -> str:
+        messages = [
+            SystemMessage(content=(
+                "You are the PraxisIQ assistant, a compassionate CBT-trained therapist. "
+                "You are following up with the user on their journal entries. "
+                "Provide therapeutic, helpful, and supportive responses. Keep responses concise and natural. "
+                "Do not be overly clinical."
+            ))
+        ]
+        
+        for msg in chat_history:
+            if msg.role == "user":
+                messages.append(HumanMessage(content=msg.content))
+            elif msg.role == "assistant":
+                messages.append(AIMessage(content=msg.content))
+                
+        messages.append(HumanMessage(content=new_message))
+        
+        try:
+            response = self._llm.invoke(messages)
+            return response.content
+        except Exception as exc:
+            logger.error("Failed to generate chat response: %s", exc)
+            raise RuntimeError("Failed to generate response via Groq") from exc
