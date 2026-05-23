@@ -1,24 +1,26 @@
-from sentence_transformers import SentenceTransformer
+import os
+import httpx
+from src.core.logging import get_logger
 
-# Lazy initialization singleton
-_model: SentenceTransformer | None = None
+logger = get_logger(__name__)
 
-
-def _get_model() -> SentenceTransformer:
-    global _model
-    if _model is None:
-        # all-MiniLM-L6-v2 is an excellent balance of speed and semantic quality
-        # It produces 384-dimensional vectors
-        _model = SentenceTransformer("all-MiniLM-L6-v2")
-    return _model
+EMBEDDING_SERVER_URL = os.getenv(
+    "EMBEDDING_SERVER_URL", "http://127.0.0.1:8080/embed"
+)
 
 
 def get_embedding(text: str) -> list[float]:
     """
-    Generate a 384-dimensional semantic embedding via all-MiniLM-L6-v2.
+    Generate a 384-dimensional semantic embedding via the shared embedding microservice.
     """
-    model = _get_model()
-    # model.encode returns a numpy array, we convert to a standard python list
-    # for compatibility with database drivers
-    embedding = model.encode(text)
-    return embedding.tolist()
+    if not text or not text.strip():
+        raise ValueError("Text must not be empty")
+
+    try:
+        with httpx.Client(timeout=15.0) as client:
+            resp = client.post(EMBEDDING_SERVER_URL, json={"text": text})
+            resp.raise_for_status()
+            return resp.json()["embedding"]
+    except Exception as exc:
+        logger.error("Failed to generate embedding via server: %s", exc)
+        raise RuntimeError("Embedding service unavailable") from exc

@@ -3,3 +3,7 @@
 2026-05-23 09:50:57,487 | ERROR | src.main | analyze_journal:91 | Unexpected error during analysis: object JournalAnalysis can't be used in 'await' expression
 2026-05-23 09:50:57,492 | ERROR | src.main | analyze_journal:91 | Unexpected error during analysis: object JournalAnalysis can't be used in 'await' expression
 2026-05-23 09:50:57,700 | ERROR | src.main | analyze_journal:91 | Unexpected error during analysis: object JournalAnalysis can't be used in 'await' expression
+2026-05-23 10:44:04,051 | ERROR | src.core.embeddings | get_embedding:25 | Failed to generate embedding via server: [Errno 111] Connection refused
+2026-05-23 10:44:04,208 | ERROR | src.core.embeddings | get_embedding:25 | Failed to generate embedding via server: [Errno 111] Connection refused
+2026-05-23 10:44:04,244 | ERROR | src.core.embeddings | get_embedding:25 | Failed to generate embedding via server: [Errno 111] Connection refused
+2026-05-23 10:44:04,316 | ERROR | src.core.embeddings | get_embedding:25 | Failed to generate embedding via server: [Errno 111] Connection refused

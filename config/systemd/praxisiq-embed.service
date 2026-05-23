@@ -1,14 +1,13 @@
 [Unit]
-Description=PraxisIQ FastAPI Backend
-After=network.target praxisiq-embed.service
-Wants=praxisiq-embed.service
+Description=PraxisIQ Embedding Server
+After=network.target
 
 [Service]
 Type=simple
 WorkingDirectory=/home/vishnu/worklab/praxisiq
 EnvironmentFile=/home/vishnu/worklab/praxisiq/.env
 Environment=PYTHONPATH=/home/vishnu/worklab/praxisiq
-ExecStart=/home/vishnu/worklab/praxisiq/.venv/bin/uvicorn src.main:app --host 0.0.0.0 --port 8000
+ExecStart=/home/vishnu/worklab/praxisiq/.venv/bin/python src/embed_server.py
 Restart=always
 RestartSec=5
 

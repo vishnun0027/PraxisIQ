@@ -1,6 +1,7 @@
 [Unit]
 Description=PraxisIQ Telegram Collector Bot
-After=network.target
+After=network.target praxisiq-embed.service
+Wants=praxisiq-embed.service
 
 [Service]
 Type=simple

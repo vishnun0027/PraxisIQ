@@ -512,3 +512,45 @@
 2026-05-23 10:00:44,623 | INFO | src.main | lifespan:25 | Initializing database tables
 2026-05-23 10:00:44,624 | INFO | src.main | lifespan:27 | Application ready
 2026-05-23 10:00:44,628 | INFO | src.main | journal_clear_all:109 | Cleared all journal entries (5 rows)
+2026-05-23 10:44:03,996 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-23 10:44:03,997 | INFO | src.main | lifespan:27 | Application ready
+2026-05-23 10:44:04,009 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-23 10:44:04,010 | INFO | src.main | lifespan:27 | Application ready
+2026-05-23 10:44:04,051 | ERROR | src.core.embeddings | get_embedding:25 | Failed to generate embedding via server: [Errno 111] Connection refused
+2026-05-23 10:44:04,129 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-23 10:44:04,130 | INFO | src.main | lifespan:27 | Application ready
+2026-05-23 10:44:04,141 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-23 10:44:04,142 | INFO | src.main | lifespan:27 | Application ready
+2026-05-23 10:44:04,153 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-23 10:44:04,153 | INFO | src.main | lifespan:27 | Application ready
+2026-05-23 10:44:04,170 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-23 10:44:04,171 | INFO | src.main | lifespan:27 | Application ready
+2026-05-23 10:44:04,208 | ERROR | src.core.embeddings | get_embedding:25 | Failed to generate embedding via server: [Errno 111] Connection refused
+2026-05-23 10:44:04,244 | ERROR | src.core.embeddings | get_embedding:25 | Failed to generate embedding via server: [Errno 111] Connection refused
+2026-05-23 10:44:04,264 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-23 10:44:04,265 | INFO | src.main | lifespan:27 | Application ready
+2026-05-23 10:44:04,280 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-23 10:44:04,281 | INFO | src.main | lifespan:27 | Application ready
+2026-05-23 10:44:04,316 | ERROR | src.core.embeddings | get_embedding:25 | Failed to generate embedding via server: [Errno 111] Connection refused
+2026-05-23 10:44:04,333 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-23 10:44:04,334 | INFO | src.main | lifespan:27 | Application ready
+2026-05-23 10:44:04,337 | INFO | src.main | journal_clear_all:109 | Cleared all journal entries (5 rows)
+2026-05-23 10:44:39,844 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-23 10:44:39,845 | INFO | src.main | lifespan:27 | Application ready
+2026-05-23 10:44:39,861 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-23 10:44:39,861 | INFO | src.main | lifespan:27 | Application ready
+2026-05-23 10:44:39,887 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-23 10:44:39,888 | INFO | src.main | lifespan:27 | Application ready
+2026-05-23 10:44:39,903 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-23 10:44:39,904 | INFO | src.main | lifespan:27 | Application ready
+2026-05-23 10:44:39,919 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-23 10:44:39,919 | INFO | src.main | lifespan:27 | Application ready
+2026-05-23 10:44:39,940 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-23 10:44:39,941 | INFO | src.main | lifespan:27 | Application ready
+2026-05-23 10:44:39,979 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-23 10:44:39,979 | INFO | src.main | lifespan:27 | Application ready
+2026-05-23 10:44:39,996 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-23 10:44:39,997 | INFO | src.main | lifespan:27 | Application ready
+2026-05-23 10:44:40,025 | INFO | src.main | lifespan:25 | Initializing database tables
+2026-05-23 10:44:40,025 | INFO | src.main | lifespan:27 | Application ready
+2026-05-23 10:44:40,029 | INFO | src.main | journal_clear_all:109 | Cleared all journal entries (5 rows)
