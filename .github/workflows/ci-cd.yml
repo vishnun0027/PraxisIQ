@@ -67,5 +67,5 @@ jobs:
             
             # Reload daemon and restart services
             systemctl --user daemon-reload
-            systemctl --user enable praxisiq-api.service praxisiq-collector.service praxisiq-weekly.timer
-            systemctl --user restart praxisiq-api.service praxisiq-collector.service praxisiq-weekly.timer
+            systemctl --user enable praxisiq-api.service praxisiq-collector.service praxisiq-weekly.timer praxisiq-embed.service
+            systemctl --user restart praxisiq-api.service praxisiq-collector.service praxisiq-weekly.timer praxisiq-embed.service
