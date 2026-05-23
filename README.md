@@ -1,137 +1,63 @@
-# PraxisIQ
+# PraxisIQ 🧠
 
-An AI-powered journaling application that analyzes your emotions using CBT (Cognitive Behavioral Therapy) techniques. Write a journal entry, receive structured emotional analysis, and track your emotional trends over time.
-
----
-
-## Tech Stack
-
-- **Backend**: FastAPI + SQLAlchemy 2.0 + PostgreSQL
-- **AI**: LangChain + Groq Cloud (`llama-3.3-70b-versatile`)
-- **Vector Search**: Supabase pgvector + SentenceTransformers (`all-MiniLM-L6-v2`)
-
-- **Ingestion**: Telegram Bot Polling
-- **Package Manager**: [uv](https://docs.astral.sh/uv/)
+> **An AI-powered emotional journaling assistant designed to guide self-reflection, identify cognitive distortions, and foster mental clarity using Cognitive Behavioral Therapy (CBT) techniques.**
 
 ---
 
-## Prerequisites
+## 🌟 The Core Idea
 
-- Python 3.12+
-- [uv](https://docs.astral.sh/uv/) installed
-- Supabase account & project with `pgvector` enabled
-- Groq Cloud API Key
-- Telegram Bot Token (optional, for mobile ingestion)
+Modern life is fast, stressful, and often leaves little room for structured self-reflection. **PraxisIQ** bridges the gap between raw thought and therapeutic clarity. It acts as an active, compassionate companion that listens to your daily journals, analyzes the underlying emotions, highlights unhelpful thinking patterns, and helps you shift your perspective in real-time.
+
+By combining the proven efficacy of **Cognitive Behavioral Therapy (CBT)** with advanced artificial intelligence, PraxisIQ transforms journaling from a passive record into an interactive tool for personal growth.
 
 ---
 
-## Setup
+## ✨ Key Features
 
-### 1. Clone and install dependencies
+### 1. Interactive Telegram Ingestion
+Write a journal entry whenever inspiration strikes, right from your phone. PraxisIQ integrates seamlessly with Telegram, providing an instant, private channel to offload thoughts, worries, or achievements on the go.
 
-```bash
-git clone https://github.com/vishnun0027/PraxisIQ.git
-cd PraxisIQ
-uv sync
-```
+### 2. Immediate CBT-Style Analysis
+The moment you save a journal entry, PraxisIQ instantly analyzes your text to extract critical emotional insights:
+* **Emotion Identification**: Automatically categorizes key emotional drivers (e.g. overwhelm, hope, stress, calm).
+* **Intensity Tracking**: Assigns a clear severity rating (1–10) to map emotional heights.
+* **Cognitive Distortion Detection**: Automatically flags common patterns like *catastrophizing*, *mind-reading*, or *all-or-nothing thinking*.
 
-### 2. Configure environment
+### 3. Immediate Perspective Shifts (Reframing)
+Receive an instant, supportive feedback loop containing:
+* 💡 **Compassionate Guidance**: Practical, encouraging words customized to your immediate emotional state.
+* 🌱 **Cognitive Reframing**: An actionable shift to help you reframe negative thoughts into healthier, balanced perspectives.
 
-Create a `.env` file in the project root:
+### 4. Interactive Copilot Chat
+Have a follow-up thought? Simply reply directly to the bot's analysis. The **Compassionate Copilot** (trained in CBT-style therapeutic interaction) will engage in a supportive, natural conversation to help you talk through your feelings.
 
-```env
-# --- Database Configuration (Supabase) ---
-DATABASE_URL=postgresql+psycopg://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres?sslmode=require
+### 5. Semantic History Search
+Our minds remember concepts, not just words. PraxisIQ allows you to search your journal conceptually. Querying *"that time I felt stressed about presenting"* retrieves semantically similar entries even if those exact words weren't used, allowing you to trace your progress over time.
 
-# --- LLM Configuration (Groq Cloud) ---
-GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
-# --- Telegram Bot Integration (Collector) ---
-TELEGRAM_BOT_TOKEN=1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZ
-TELEGRAM_ALLOWED_CHAT_ID=987654321
-```
-
-### 3. Configure the LLM model
-
-Edit `config/llm_model.yaml` with the name of your Groq model:
-
-```yaml
-model_name: "llama-3.3-70b-versatile"
-temperature: 0.0
-timeout: 60
-max_retries: 3
-```
+### 6. Proactive Weekly Digests
+Every week, receive a beautifully compiled summary direct to your chat highlighting your emotional trends, recurring thinking patterns, and a supportive overarching reframing of the week's events.
 
 ---
 
-## Running Locally
+## 🔄 How It Works
 
-### Start the FastAPI backend
-
-```bash
-uv run uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
+```
+[ Your Thought ] ──( Telegram )──> [ PraxisIQ Engine ] ──( CBT Framework )──> [ Instant Reframing ]
+                                                                                   │
+                                                                                   ▼
+                                                                        [ Interactive Copilot Chat ]
 ```
 
-API available at: `http://localhost:8000`
-Interactive docs: `http://localhost:8000/docs`
-
-
-
-### Run the Telegram Collector (Optional)
-
-In a separate terminal, to start polling Telegram for new entries:
-
-```bash
-uv run python src/bot/collector.py
-```
+1. **Express**: You dump your thoughts into your private Telegram chat.
+2. **Deconstruct**: The AI analyzes the emotional layers, intensity, and cognitive distortions.
+3. **Reframe**: The engine sends back an encouraging reframing and perspective shift instantly.
+4. **Dialogue**: You reply to explore your thoughts further with the compassionate copilot.
+5. **Summarize**: You receive a weekly overview of your emotional journey and trends.
 
 ---
 
-## Running Tests
+## 🎯 Who Is It For?
 
-```bash
-uv run pytest tests/ -v
-```
-
-With coverage:
-
-```bash
-uv run pytest tests/ -v --cov=src --cov-report=term-missing
-```
-
----
-
-## API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/health` | Health check |
-| `POST` | `/journal` | Submit a journal entry for analysis |
-| `GET` | `/journal/history` | Get past entries (supports `skip` and `limit`) |
-| `GET` | `/journal/search` | Semantic search for similar entries (`?q=...`) |
-| `GET` | `/journal/{id}` | Get a single entry by ID |
-| `DELETE` | `/journal/all` | Delete all journal entries |
-
----
-
-## Project Structure
-
-```
-PraxisIQ/
-├── src/
-│   ├── main.py              # FastAPI app and routes
-│   ├── analyzer.py          # LLM-based journal analyzer
-│   └── core/
-│       ├── models.py        # SQLAlchemy ORM models
-│       ├── crud.py          # Database operations
-│       ├── database.py      # DB engine, session, and Qdrant init
-│       ├── embeddings.py    # Sentence embedding generation
-│       └── logging.py       # Logging setup
-
-├── config/
-│   └── llm_model.yaml       # LLM configuration
-├── tests/                   # Pytest test suite
-├── src/bot/                 # Telegram integration
-│   └── collector.py         # Polling script
-
-```
+* 🧘 **Mindfulness Practitioners**: Anyone looking to build a consistent, meaningful journaling habit.
+* 📈 **Growth-Minded Individuals**: People who want to trace their emotional habits and spot recurring cognitive bottlenecks.
+* ⚡ **Busy Professionals**: Individuals seeking a rapid, low-friction channel to vent, reflect, and gain immediate mental clarity on the go.
