@@ -58,6 +58,8 @@ jobs:
           port: 22
           script: |
             cd /home/vishnu/worklab/praxisiq
+            export PATH="$HOME/.local/bin:$PATH"
+            git reset --hard HEAD
             git pull origin main
             uv sync --frozen
             
