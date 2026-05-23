@@ -30,8 +30,8 @@ An AI-powered journaling application that analyzes your emotions using CBT (Cogn
 ### 1. Clone and install dependencies
 
 ```bash
-git clone https://github.com/vishnun0027/projectx.git
-cd projectx
+git clone https://github.com/vishnun0027/PraxisIQ.git
+cd PraxisIQ
 uv sync
 ```
 
@@ -117,7 +117,7 @@ uv run pytest tests/ -v --cov=src --cov-report=term-missing
 ## Project Structure
 
 ```
-projectx/
+PraxisIQ/
 ├── src/
 │   ├── main.py              # FastAPI app and routes
 │   ├── analyzer.py          # LLM-based journal analyzer

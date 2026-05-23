@@ -1,0 +1,15 @@
+[Unit]
+Description=PraxisIQ Telegram Collector Bot
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/vishnu/worklab/praxisiq
+EnvironmentFile=/home/vishnu/worklab/praxisiq/.env
+Environment=PYTHONPATH=/home/vishnu/worklab/praxisiq
+ExecStart=/home/vishnu/worklab/praxisiq/.venv/bin/python src/bot/collector.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

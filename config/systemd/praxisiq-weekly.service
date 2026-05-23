@@ -1,0 +1,10 @@
+[Unit]
+Description=PraxisIQ Weekly Report Generator
+After=network.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/vishnu/worklab/praxisiq
+EnvironmentFile=/home/vishnu/worklab/praxisiq/.env
+Environment=PYTHONPATH=/home/vishnu/worklab/praxisiq
+ExecStart=/home/vishnu/worklab/praxisiq/.venv/bin/python src/jobs/weekly_report.py

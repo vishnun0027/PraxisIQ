@@ -1,0 +1,15 @@
+[Unit]
+Description=PraxisIQ FastAPI Backend
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/vishnu/worklab/praxisiq
+EnvironmentFile=/home/vishnu/worklab/praxisiq/.env
+Environment=PYTHONPATH=/home/vishnu/worklab/praxisiq
+ExecStart=/home/vishnu/worklab/praxisiq/.venv/bin/uvicorn src.main:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target
