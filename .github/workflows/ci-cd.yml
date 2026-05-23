@@ -10,8 +10,17 @@ on:
 
 jobs:
   ci:
-    name: Continuous Integration (Tests)
+    name: Continuous Integration (Tests & Lint)
     runs-on: ubuntu-latest
+
+    env:
+      # Dummy values so modules can import without crashing.
+      # All real I/O is mocked inside the test suite.
+      DATABASE_URL: "sqlite:///./test.db"
+      GROQ_API_KEY: "ci-dummy-key"
+      TELEGRAM_BOT_TOKEN: "0000000000:ci-dummy-token"
+      TELEGRAM_ALLOWED_CHAT_ID: "123456789"
+      EMBED_SERVER_URL: "http://localhost:8080"
 
     steps:
       - name: Checkout Code
@@ -28,7 +37,7 @@ jobs:
       - name: Add uv to PATH
         run: echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: Set up uv Cache
+      - name: Cache uv dependencies
         uses: actions/cache@v4
         with:
           path: ~/.cache/uv
@@ -39,8 +48,11 @@ jobs:
       - name: Install Dependencies
         run: uv sync
 
+      - name: Lint with Ruff
+        run: uv run ruff check src/ tests/
+
       - name: Run Tests
-        run: uv run pytest tests/ -v
+        run: uv run pytest tests/ -v --tb=short
 
   cd:
     name: Continuous Deployment (Ubuntu Cloud Instance)
@@ -57,17 +69,41 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
+            set -e
             cd /home/vishnu/worklab/praxisiq
             export PATH="$HOME/.local/bin:$PATH"
+
+            echo "--- Pulling latest code ---"
             git reset --hard HEAD
             git pull origin main
+
+            echo "--- Syncing dependencies ---"
             uv sync --frozen
-            
-            # Copy systemd service files to user systemd directory
+
+            echo "--- Installing systemd service files ---"
             mkdir -p ~/.config/systemd/user/
-            cp /home/vishnu/worklab/praxisiq/config/systemd/* ~/.config/systemd/user/ 2>/dev/null || true
-            
-            # Reload daemon and restart services
+            cp /home/vishnu/worklab/praxisiq/config/systemd/* ~/.config/systemd/user/
+
+            echo "--- Reloading systemd and restarting services ---"
             systemctl --user daemon-reload
-            systemctl --user enable praxisiq-api.service praxisiq-collector.service praxisiq-weekly.timer praxisiq-embed.service
-            systemctl --user restart praxisiq-api.service praxisiq-collector.service praxisiq-weekly.timer praxisiq-embed.service
+            systemctl --user enable praxisiq-embed.service praxisiq-api.service praxisiq-collector.service praxisiq-weekly.timer
+            systemctl --user restart praxisiq-embed.service
+            sleep 3
+            systemctl --user restart praxisiq-api.service praxisiq-collector.service praxisiq-weekly.timer
+
+            echo "--- Verifying deployment (health check) ---"
+            sleep 5
+            curl --fail --silent --show-error http://localhost:8000/health \
+              && echo "✅ API health check passed" \
+              || (echo "❌ API health check FAILED" && exit 1)
+
+            echo "--- Checking service statuses ---"
+            systemctl --user is-active --quiet praxisiq-api.service \
+              && echo "✅ praxisiq-api.service is active" \
+              || echo "⚠️  praxisiq-api.service is NOT active"
+            systemctl --user is-active --quiet praxisiq-collector.service \
+              && echo "✅ praxisiq-collector.service is active" \
+              || echo "⚠️  praxisiq-collector.service is NOT active"
+            systemctl --user is-active --quiet praxisiq-embed.service \
+              && echo "✅ praxisiq-embed.service is active" \
+              || echo "⚠️  praxisiq-embed.service is NOT active"
