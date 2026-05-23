@@ -4,12 +4,12 @@ from dotenv import load_dotenv
 # Load env before imports
 load_dotenv(override=True)
 
-from langchain_groq import ChatGroq
 from langchain_core.messages import SystemMessage, HumanMessage
 from src.core.database import SessionLocal, init_db
 from src.core.crud import get_recent_entries
 from src.core.logging import get_logger
 from src.bot.collector import send_message
+from src.analyzer import get_llm
 
 logger = get_logger(__name__)
 
@@ -40,9 +40,8 @@ def run_weekly_report() -> None:
             formatted_entries += f"Emotions: {', '.join(entry.analysis.get('detected_emotions', []))}\n"
             formatted_entries += f"Distortions: {', '.join(entry.analysis.get('cognitive_distortions', []))}\n\n"
 
-        # Initialize LLM
-        model_name = "llama-3.3-70b-versatile"
-        llm = ChatGroq(model=model_name, temperature=0.3, max_retries=3)
+        # Initialize LLM using shared logic
+        llm = get_llm()
 
         messages = [
             SystemMessage(content=(

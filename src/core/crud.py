@@ -3,16 +3,14 @@ from sqlalchemy import select, delete
 from sqlalchemy.orm import Session
 
 from src.core.models import JournalEntry, ChatMessage
-from src.core.embeddings import get_embedding
 
 
-def save_entry(db: Session, text: str, analysis: dict) -> JournalEntry:
+def save_entry(db: Session, text: str, analysis: dict, embedding: list[float]) -> JournalEntry:
     """Save journal entry alongside its 384d embedding directly to Postgres."""
-    vector = get_embedding(text)
     entry = JournalEntry(
         text=text,
         analysis=analysis,
-        embedding=vector,
+        embedding=embedding,
     )
     db.add(entry)
     db.commit()
@@ -50,10 +48,8 @@ def clear_entries(db: Session) -> int:
     return result.rowcount
 
 
-def search_similar_entries(db: Session, query_text: str, limit: int = 5) -> list[JournalEntry]:
+def search_similar_entries(db: Session, query_vector: list[float], limit: int = 5) -> list[JournalEntry]:
     """Search for semantically similar journal entries using pgvector cosine distance."""
-    query_vector = get_embedding(query_text)
-
     stmt = (
         select(JournalEntry)
         .order_by(JournalEntry.embedding.cosine_distance(query_vector))

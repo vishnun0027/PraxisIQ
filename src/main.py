@@ -11,11 +11,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ConfigDict, ValidationError
 from sqlalchemy.orm import Session
 
-from src.analyzer import JournalAnalyzer
-from src.core.crud import save_entry, get_entries, get_entry_by_id, clear_entries, search_similar_entries
+from src.core.crud import get_entries, get_entry_by_id, clear_entries
 from src.core.database import get_db, init_db
 from src.core.models import JournalEntry
 from src.core.logging import get_logger
+from src.services.journal_service import JournalService
 
 logger = get_logger(__name__)
 
@@ -38,7 +38,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-analyzer = JournalAnalyzer()
+journal_service = JournalService()
 
 
 class JournalRequest(BaseModel):
@@ -54,12 +54,12 @@ class JournalEntryResponse(BaseModel):
     created_at: str
 
 
-def _entry_to_response(entry: JournalEntry, analysis: dict | None = None) -> JournalEntryResponse:
+def _entry_to_response(entry: JournalEntry) -> JournalEntryResponse:
     """Convert an ORM JournalEntry to a JournalEntryResponse."""
     return JournalEntryResponse(
         id=entry.id,
         text=entry.text,
-        analysis=analysis if analysis is not None else entry.analysis,
+        analysis=entry.analysis,
         created_at=entry.created_at.isoformat(),
     )
 
@@ -70,12 +70,13 @@ def health() -> dict[str, str]:
 
 
 @app.post("/journal", response_model=JournalEntryResponse)
-def analyze_journal(
+async def analyze_journal(
     request: JournalRequest,
     db: Session = Depends(get_db),
 ) -> JournalEntryResponse:
     try:
-        analysis = analyzer.analyze(request.text)
+        entry = await journal_service.process_journal_entry(db, request.text)
+        return _entry_to_response(entry)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except (json.JSONDecodeError, ValidationError) as exc:
@@ -89,10 +90,6 @@ def analyze_journal(
     except Exception as exc:
         logger.error("Unexpected error during analysis: %s", exc)
         raise HTTPException(status_code=500, detail="Internal server error") from exc
-
-    analysis_dict = analysis.model_dump()
-    entry = save_entry(db, request.text, analysis_dict)
-    return _entry_to_response(entry, analysis_dict)
 
 
 @app.get("/journal/history", response_model=list[JournalEntryResponse])
@@ -114,13 +111,13 @@ def journal_clear_all(db: Session = Depends(get_db)) -> dict[str, int]:
 
 
 @app.get("/journal/search", response_model=list[JournalEntryResponse])
-def journal_search(
+async def journal_search(
     q: str = Query(..., min_length=2, description="Search conceptually similar entries"),
     limit: int = Query(5, ge=1, le=20),
     db: Session = Depends(get_db),
 ) -> list[JournalEntryResponse]:
     """Semantic search over past journal entries."""
-    entries = search_similar_entries(db, query_text=q, limit=limit)
+    entries = await journal_service.search_similar(db, query_text=q, limit=limit)
     return [_entry_to_response(e) for e in entries]
 
 

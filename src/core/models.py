@@ -4,7 +4,7 @@ from sqlalchemy import Integer, Text, DateTime, JSON, String
 from sqlalchemy.orm import Mapped, mapped_column
 from pgvector.sqlalchemy import Vector
 
-from src.core.database import Base
+from src.core.base import Base
 
 
 class JournalEntry(Base):

@@ -3,9 +3,10 @@ import time
 from collections.abc import Generator
 
 from sqlalchemy import create_engine, text
-from sqlalchemy.orm import Session, sessionmaker, DeclarativeBase
+from sqlalchemy.orm import Session, sessionmaker
 
 from src.core.logging import get_logger
+from src.core.base import Base
 
 logger = get_logger(__name__)
 
@@ -20,10 +21,6 @@ engine = create_engine(
     pool_pre_ping=True,  # Detect and recycle stale connections automatically
 )
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
-
-
-class Base(DeclarativeBase):
-    pass
 
 
 def get_db() -> Generator[Session, None, None]:

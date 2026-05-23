@@ -28,7 +28,7 @@ def _initialize_model() -> ChatGroq:
     )
 
 
-def _get_llm() -> ChatGroq:
+def get_llm() -> ChatGroq:
     """Lazily initialize the LLM singleton on first call."""
     global _llm_instance
     if _llm_instance is None:
@@ -76,17 +76,17 @@ class JournalAnalysis(BaseModel):
 
 class JournalAnalyzer:
     def __init__(self) -> None:
-        self._llm_instance = None
+        self._structured_llm = None
 
     @property
     def _llm(self):
-        if self._llm_instance is None:
-            self._llm_instance = _get_llm().with_structured_output(JournalAnalysis)
-        return self._llm_instance
+        if self._structured_llm is None:
+            self._structured_llm = get_llm().with_structured_output(JournalAnalysis)
+        return self._structured_llm
 
     @_llm.setter
     def _llm(self, value):
-        self._llm_instance = value
+        self._structured_llm = value
 
     def _build_prompt(self, entry: str) -> str:
         return f"""
@@ -102,22 +102,22 @@ Journal Entry:
 \"\"\"
 """
 
-    def analyze(self, entry: str, max_retries: int = 3) -> JournalAnalysis:
+    async def analyze(self, entry: str) -> JournalAnalysis:
         if not entry or not entry.strip():
             raise ValueError("Journal entry must not be empty")
 
-        # invoke() now returns a validated JournalAnalysis model directly
+        # ainvoke() returns a validated JournalAnalysis model directly
         try:
-            return self._llm.invoke(self._build_prompt(entry))
+            return await self._llm.ainvoke(self._build_prompt(entry))
         except Exception as exc:
             logger.error("Failed to analyze journal entry: %s", exc)
             raise RuntimeError("Failed to generate structured analysis via Groq") from exc
 
 class ChatCopilot:
     def __init__(self) -> None:
-        self._llm = _get_llm()
+        self._llm = get_llm()
         
-    def chat(self, chat_history: list, new_message: str) -> str:
+    async def chat(self, chat_history: list, new_message: str) -> str:
         messages = [
             SystemMessage(content=(
                 "You are the PraxisIQ assistant, a compassionate CBT-trained therapist. "
@@ -136,7 +136,7 @@ class ChatCopilot:
         messages.append(HumanMessage(content=new_message))
         
         try:
-            response = self._llm.invoke(messages)
+            response = await self._llm.ainvoke(messages)
             return response.content
         except Exception as exc:
             logger.error("Failed to generate chat response: %s", exc)

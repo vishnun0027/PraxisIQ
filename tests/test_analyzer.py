@@ -1,6 +1,6 @@
 import json
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, AsyncMock
 
 from src.analyzer import JournalAnalyzer, JournalAnalysis
 
@@ -89,31 +89,36 @@ class TestAllDistortionsAccepted:
 
 
 class TestJournalAnalyzer:
-    def test_empty_entry_raises(self) -> None:
+    @pytest.mark.anyio
+    async def test_empty_entry_raises(self) -> None:
         analyzer = JournalAnalyzer()
         with pytest.raises(ValueError, match="must not be empty"):
-            analyzer.analyze("")
+            await analyzer.analyze("")
 
-    def test_whitespace_entry_raises(self) -> None:
+    @pytest.mark.anyio
+    async def test_whitespace_entry_raises(self) -> None:
         analyzer = JournalAnalyzer()
         with pytest.raises(ValueError, match="must not be empty"):
-            analyzer.analyze("   ")
+            await analyzer.analyze("   ")
 
     def test_prompt_contains_entry(self) -> None:
         analyzer = JournalAnalyzer()
         prompt = analyzer._build_prompt("I feel stressed today")
         assert "I feel stressed today" in prompt
 
-    @patch("src.analyzer._llm_instance")
-    def test_analyze_returns_valid_analysis(self, mock_llm: MagicMock) -> None:
+    @pytest.mark.anyio
+    @patch("src.analyzer.get_llm")
+    async def test_analyze_returns_valid_analysis(self, mock_get_llm: MagicMock) -> None:
         mock_response = JournalAnalysis.model_validate_json(VALID_ANALYSIS_JSON)
-        mock_llm.invoke.return_value = mock_response
-
+        
+        mock_structured_llm = MagicMock()
+        mock_structured_llm.ainvoke = AsyncMock(return_value=mock_response)
+        
         analyzer = JournalAnalyzer()
-        analyzer._llm = mock_llm
+        analyzer._llm = mock_structured_llm
 
-        result = analyzer.analyze("I feel stressed at work")
+        result = await analyzer.analyze("I feel stressed at work")
 
         assert isinstance(result, JournalAnalysis)
         assert result.detected_emotions == ["stress", "anxiety"]
-        mock_llm.invoke.assert_called_once()
+        mock_structured_llm.ainvoke.assert_called_once()
