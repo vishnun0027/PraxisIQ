@@ -21,7 +21,7 @@ def get_logger(name: str) -> logging.Logger:
 
     file_handler = handlers.RotatingFileHandler(
         log_dir / "app.log",
-        maxBytes=10 * 1024 * 1024,
+        maxBytes=8 * 1024 * 1024,
         backupCount=5,
         encoding="utf-8",
     )
@@ -30,7 +30,7 @@ def get_logger(name: str) -> logging.Logger:
 
     error_handler = handlers.RotatingFileHandler(
         log_dir / "error.log",
-        maxBytes=10 * 1024 * 1024,
+        maxBytes=8 * 1024 * 1024,
         backupCount=5,
         encoding="utf-8",
     )
