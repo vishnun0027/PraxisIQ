@@ -76,8 +76,17 @@ class JournalAnalysis(BaseModel):
 
 class JournalAnalyzer:
     def __init__(self) -> None:
-        # Use with_structured_output to automatically force Llama 3 to output valid JournalAnalysis schemas
-        self._llm = _get_llm().with_structured_output(JournalAnalysis)
+        self._llm_instance = None
+
+    @property
+    def _llm(self):
+        if self._llm_instance is None:
+            self._llm_instance = _get_llm().with_structured_output(JournalAnalysis)
+        return self._llm_instance
+
+    @_llm.setter
+    def _llm(self, value):
+        self._llm_instance = value
 
     def _build_prompt(self, entry: str) -> str:
         return f"""
