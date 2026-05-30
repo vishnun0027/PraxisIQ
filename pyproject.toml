@@ -27,9 +27,26 @@ dev = [
     "pytest>=9.0.2",
     "pytest-cov>=7.0.0",
     "ruff>=0.4.4",
+    "mypy>=1.10.0",
 ]
 
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "SIM"]
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["praxisiq", "core", "services", "bot"]
+
 [tool.ruff.lint.per-file-ignores]
-"src/main.py" = ["E402"]
+"src/main.py" = ["E402", "B008"]
 "src/bot/collector.py" = ["E402"]
 "src/jobs/weekly_report.py" = ["E402"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+ignore_missing_imports = true

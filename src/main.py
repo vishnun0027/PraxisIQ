@@ -1,20 +1,21 @@
 import json
-from contextlib import asynccontextmanager
 from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
+
 load_dotenv(override=True)
 
 
-from fastapi import FastAPI, HTTPException, Depends, Query
+from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ConfigDict, ValidationError
 from sqlalchemy.orm import Session
 
-from src.core.crud import get_entries, get_entry_by_id, clear_entries
+from src.core.crud import clear_entries, get_entries, get_entry_by_id
 from src.core.database import get_db, init_db
-from src.core.models import JournalEntry
 from src.core.logging import get_logger
+from src.core.models import JournalEntry
 from src.services.journal_service import JournalService
 
 logger = get_logger(__name__)
@@ -80,9 +81,7 @@ async def analyze_journal(
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except (json.JSONDecodeError, ValidationError) as exc:
-        raise HTTPException(
-            status_code=502, detail="LLM returned invalid response"
-        ) from exc
+        raise HTTPException(status_code=502, detail="LLM returned invalid response") from exc
     except RuntimeError as exc:
         raise HTTPException(
             status_code=503, detail="Analysis service temporarily unavailable"

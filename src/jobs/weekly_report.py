@@ -1,17 +1,20 @@
 import os
+
 from dotenv import load_dotenv
 
 # Load env before imports
 load_dotenv(override=True)
 
-from langchain_core.messages import SystemMessage, HumanMessage
-from src.core.database import SessionLocal, init_db
-from src.core.crud import get_recent_entries
-from src.core.logging import get_logger
-from src.bot.collector import send_message
+from langchain_core.messages import HumanMessage, SystemMessage
+
 from src.analyzer import get_llm
+from src.bot.collector import send_message
+from src.core.crud import get_recent_entries
+from src.core.database import SessionLocal, init_db
+from src.core.logging import get_logger
 
 logger = get_logger(__name__)
+
 
 def run_weekly_report() -> None:
     chat_id = os.getenv("TELEGRAM_ALLOWED_CHAT_ID")
@@ -26,7 +29,7 @@ def run_weekly_report() -> None:
             logger.info("No entries this week.")
             send_message(
                 int(chat_id),
-                "📅 **Weekly Check-in**\n\nYou haven't journaled any entries this week. Take a few minutes today to check in with yourself!"
+                "📅 **Weekly Check-in**\n\nYou haven't journaled any entries this week. Take a few minutes today to check in with yourself!",
             )
             return
 
@@ -35,24 +38,32 @@ def run_weekly_report() -> None:
         # Format entries for the LLM
         formatted_entries = ""
         for entry in entries:
-            formatted_entries += f"--- Entry (Intensity: {entry.analysis.get('emotional_intensity')}/10) ---\n"
+            formatted_entries += (
+                f"--- Entry (Intensity: {entry.analysis.get('emotional_intensity')}/10) ---\n"
+            )
             formatted_entries += f"Text: {entry.text}\n"
-            formatted_entries += f"Emotions: {', '.join(entry.analysis.get('detected_emotions', []))}\n"
-            formatted_entries += f"Distortions: {', '.join(entry.analysis.get('cognitive_distortions', []))}\n\n"
+            formatted_entries += (
+                f"Emotions: {', '.join(entry.analysis.get('detected_emotions', []))}\n"
+            )
+            formatted_entries += (
+                f"Distortions: {', '.join(entry.analysis.get('cognitive_distortions', []))}\n\n"
+            )
 
         # Initialize LLM using shared logic
         llm = get_llm()
 
         messages = [
-            SystemMessage(content=(
-                "You are the PraxisIQ assistant, a compassionate CBT-trained therapist. "
-                "You are providing a weekly digest of the user's journal entries. "
-                "Analyze the provided journal entries from the past 7 days. "
-                "Highlight emotional trends, recurring cognitive distortions, and offer "
-                "a supportive, overarching cognitive reframing for the week. "
-                "Format using markdown. Keep it concise, insightful, and highly supportive."
-            )),
-            HumanMessage(content=formatted_entries)
+            SystemMessage(
+                content=(
+                    "You are the PraxisIQ assistant, a compassionate CBT-trained therapist. "
+                    "You are providing a weekly digest of the user's journal entries. "
+                    "Analyze the provided journal entries from the past 7 days. "
+                    "Highlight emotional trends, recurring cognitive distortions, and offer "
+                    "a supportive, overarching cognitive reframing for the week. "
+                    "Format using markdown. Keep it concise, insightful, and highly supportive."
+                )
+            ),
+            HumanMessage(content=formatted_entries),
         ]
 
         logger.info("Generating report via Groq...")
@@ -69,6 +80,7 @@ def run_weekly_report() -> None:
         logger.error("Failed to generate or send weekly report: %s", exc)
     finally:
         db.close()
+
 
 if __name__ == "__main__":
     init_db()

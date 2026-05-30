@@ -1,9 +1,10 @@
 from pathlib import Path
 
 import yaml
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_groq import ChatGroq
-from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from pydantic import BaseModel, Field
+
 from src.core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -17,7 +18,7 @@ def _initialize_model() -> ChatGroq:
     if not config_path.exists():
         raise FileNotFoundError("llm_model.yaml not found")
 
-    with open(config_path, "r", encoding="utf-8") as file:
+    with open(config_path, encoding="utf-8") as file:
         config = yaml.safe_load(file)
 
     return ChatGroq(
@@ -37,9 +38,7 @@ def get_llm() -> ChatGroq:
 
 
 class JournalAnalysis(BaseModel):
-    emotion_summary: str = Field(
-        description="Brief summary of the user's emotional state"
-    )
+    emotion_summary: str = Field(description="Brief summary of the user's emotional state")
 
     detected_emotions: list[str] = Field(
         description="List of detected emotions (e.g. joy, sadness, anxiety, relief, pride, etc.)"
@@ -65,13 +64,9 @@ class JournalAnalysis(BaseModel):
 
     reframing: str = Field(description="CBT-style cognitive reframing")
 
-    motivational_guidance: str = Field(
-        description="Encouraging motivational support message"
-    )
+    motivational_guidance: str = Field(description="Encouraging motivational support message")
 
-    crisis_detected: bool = Field(
-        description="True if crisis or self-harm language is detected"
-    )
+    crisis_detected: bool = Field(description="True if crisis or self-harm language is detected")
 
 
 class JournalAnalyzer:
@@ -113,28 +108,31 @@ Journal Entry:
             logger.error("Failed to analyze journal entry: %s", exc)
             raise RuntimeError("Failed to generate structured analysis via Groq") from exc
 
+
 class ChatCopilot:
     def __init__(self) -> None:
         self._llm = get_llm()
-        
+
     async def chat(self, chat_history: list, new_message: str) -> str:
         messages = [
-            SystemMessage(content=(
-                "You are the PraxisIQ assistant, a compassionate CBT-trained therapist. "
-                "You are following up with the user on their journal entries. "
-                "Provide therapeutic, helpful, and supportive responses. Keep responses concise and natural. "
-                "Do not be overly clinical."
-            ))
+            SystemMessage(
+                content=(
+                    "You are the PraxisIQ assistant, a compassionate CBT-trained therapist. "
+                    "You are following up with the user on their journal entries. "
+                    "Provide therapeutic, helpful, and supportive responses. Keep responses concise and natural. "
+                    "Do not be overly clinical."
+                )
+            )
         ]
-        
+
         for msg in chat_history:
             if msg.role == "user":
                 messages.append(HumanMessage(content=msg.content))
             elif msg.role == "assistant":
                 messages.append(AIMessage(content=msg.content))
-                
+
         messages.append(HumanMessage(content=new_message))
-        
+
         try:
             response = await self._llm.ainvoke(messages)
             return response.content

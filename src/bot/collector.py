@@ -1,5 +1,6 @@
 import asyncio
 import os
+
 import httpx
 from dotenv import load_dotenv
 
@@ -10,8 +11,8 @@ from sqlalchemy.orm import Session
 
 from src.core.database import SessionLocal, init_db
 from src.core.logging import get_logger
-from src.services.journal_service import JournalService
 from src.services.chat_service import ChatService
+from src.services.journal_service import JournalService
 
 logger = get_logger(__name__)
 
@@ -30,7 +31,9 @@ async def send_message(chat_id: int, text: str) -> None:
         logger.error("Failed to send telegram confirmation: %s", exc)
 
 
-async def process_update(db: Session, update: dict, journal_service: JournalService, chat_service: ChatService) -> None:
+async def process_update(
+    db: Session, update: dict, journal_service: JournalService, chat_service: ChatService
+) -> None:
     message = update.get("message")
     if not message:
         return
@@ -51,7 +54,7 @@ async def process_update(db: Session, update: dict, journal_service: JournalServ
 
     try:
         is_reply = bool(message.get("reply_to_message"))
-        
+
         if is_reply:
             logger.info("Routing reply to ChatService")
             response_text = await chat_service.get_response(db, chat_id, text)
@@ -65,23 +68,23 @@ async def process_update(db: Session, update: dict, journal_service: JournalServ
 
             # Report key analysis stats back to user instantly
             summary = "✅ **Journal Saved**\n\n"
-            
+
             guidance = entry.analysis.get("motivational_guidance")
             if guidance:
                 summary += f"💡 {guidance}\n\n"
-            
+
             reframing = entry.analysis.get("reframing")
             if reframing:
                 summary += f"🌱 **Perspective Shift**: {reframing}"
-            
+
             await chat_service.save_system_message(db, chat_id, "assistant", summary)
             await send_message(int(chat_id), summary)
 
     except Exception as exc:
         logger.error("Failed to analyze and save message: %s", exc)
         await send_message(
-            int(chat_id), 
-            f"⚠️ **Processing Error**: Could not ingest journal. Technical logs reported:\n`{str(exc)}`"
+            int(chat_id),
+            f"⚠️ **Processing Error**: Could not ingest journal. Technical logs reported:\n`{str(exc)}`",
         )
 
 
@@ -101,7 +104,7 @@ async def run_collector() -> None:
     # Initialize services
     journal_service = JournalService()
     chat_service = ChatService()
-    
+
     offset = None
 
     async with httpx.AsyncClient(timeout=35) as client:
@@ -124,13 +127,13 @@ async def run_collector() -> None:
                 continue
 
             logger.info("Retrieved %d pending updates.", len(updates))
-            
+
             # Process updates. We use a single session for the batch or one per update?
             # One per update is safer for async.
             for update in updates:
                 update_id = update.get("update_id")
                 offset = update_id + 1
-                
+
                 # We'll process updates sequentially for now to keep it simple with DB sessions,
                 # but we use await so it doesn't block the loop.
                 db: Session = SessionLocal()

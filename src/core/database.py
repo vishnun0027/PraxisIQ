@@ -5,8 +5,8 @@ from collections.abc import Generator
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session, sessionmaker
 
-from src.core.logging import get_logger
 from src.core.base import Base
+from src.core.logging import get_logger
 
 logger = get_logger(__name__)
 
@@ -50,6 +50,9 @@ def init_db(max_retries: int = 5, retry_delay: float = 2.0) -> None:
                 raise
             logger.warning(
                 "Database not ready (attempt %d/%d): %s — retrying in %.0fs",
-                attempt, max_retries, exc, retry_delay,
+                attempt,
+                max_retries,
+                exc,
+                retry_delay,
             )
             time.sleep(retry_delay)

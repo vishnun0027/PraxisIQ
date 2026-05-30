@@ -1,9 +1,9 @@
 import json
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
-from unittest.mock import MagicMock, patch, AsyncMock
 
-from src.analyzer import JournalAnalyzer, JournalAnalysis
-
+from src.analyzer import JournalAnalysis, JournalAnalyzer
 
 VALID_ANALYSIS_JSON = json.dumps(
     {
@@ -34,23 +34,46 @@ class TestJournalAnalysis:
     def test_invalid_intensity_rejected(self) -> None:
         data = json.loads(VALID_ANALYSIS_JSON)
         data["emotional_intensity"] = 15
-        with pytest.raises(Exception):
+        from pydantic import ValidationError
+        with pytest.raises(ValidationError):
             JournalAnalysis.model_validate(data)
-
-
 
 
 # --- Parametrized: every individual emotion must be accepted ---
 ALL_VALID_EMOTIONS = [
-    "joy", "gratitude", "calm", "hope", "love", "excitement", "pride",
-    "sadness", "anxiety", "stress", "anger", "frustration", "fear",
-    "disgust", "shame", "guilt", "loneliness", "jealousy", "burnout", "overwhelm",
+    "joy",
+    "gratitude",
+    "calm",
+    "hope",
+    "love",
+    "excitement",
+    "pride",
+    "sadness",
+    "anxiety",
+    "stress",
+    "anger",
+    "frustration",
+    "fear",
+    "disgust",
+    "shame",
+    "guilt",
+    "loneliness",
+    "jealousy",
+    "burnout",
+    "overwhelm",
 ]
 
 ALL_VALID_DISTORTIONS = [
-    "catastrophizing", "all_or_nothing", "overgeneralization", "mind_reading",
-    "negative_filtering", "emotional_reasoning", "should_statements",
-    "labeling", "personalization", "magnification",
+    "catastrophizing",
+    "all_or_nothing",
+    "overgeneralization",
+    "mind_reading",
+    "negative_filtering",
+    "emotional_reasoning",
+    "should_statements",
+    "labeling",
+    "personalization",
+    "magnification",
 ]
 
 
@@ -69,8 +92,6 @@ class TestAllEmotionsAccepted:
         assert set(analysis.detected_emotions) == set(ALL_VALID_EMOTIONS)
 
 
-
-
 class TestAllDistortionsAccepted:
     @pytest.mark.parametrize("distortion", ALL_VALID_DISTORTIONS)
     def test_single_distortion_accepted(self, distortion: str) -> None:
@@ -84,8 +105,6 @@ class TestAllDistortionsAccepted:
         data["cognitive_distortions"] = ALL_VALID_DISTORTIONS
         analysis = JournalAnalysis.model_validate(data)
         assert set(analysis.cognitive_distortions) == set(ALL_VALID_DISTORTIONS)
-
-
 
 
 class TestJournalAnalyzer:
@@ -110,10 +129,10 @@ class TestJournalAnalyzer:
     @patch("src.analyzer.get_llm")
     async def test_analyze_returns_valid_analysis(self, mock_get_llm: MagicMock) -> None:
         mock_response = JournalAnalysis.model_validate_json(VALID_ANALYSIS_JSON)
-        
+
         mock_structured_llm = MagicMock()
         mock_structured_llm.ainvoke = AsyncMock(return_value=mock_response)
-        
+
         analyzer = JournalAnalyzer()
         analyzer._llm = mock_structured_llm
 

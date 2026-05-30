@@ -1,12 +1,12 @@
 import os
+
 import httpx
+
 from src.core.logging import get_logger
 
 logger = get_logger(__name__)
 
-EMBEDDING_SERVER_URL = os.getenv(
-    "EMBEDDING_SERVER_URL", "http://127.0.0.1:8080/embed"
-)
+EMBEDDING_SERVER_URL = os.getenv("EMBEDDING_SERVER_URL", "http://127.0.0.1:8080/embed")
 
 
 def get_embedding(text: str) -> list[float]:

@@ -54,8 +54,14 @@ jobs:
       - name: Install Dependencies
         run: uv sync
 
+      - name: Format check
+        run: uv run ruff format --check .
+
       - name: Lint with Ruff
-        run: uv run ruff check src/ tests/
+        run: uv run ruff check .
+
+      - name: Type check
+        run: uv run mypy src tests
 
       - name: Run Tests
         run: uv run pytest tests/ -v --tb=short

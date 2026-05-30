@@ -1,15 +1,14 @@
 import json
-from unittest.mock import MagicMock, patch, AsyncMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine, StaticPool
+from sqlalchemy import StaticPool, create_engine
 from sqlalchemy.orm import sessionmaker
 
 from src.core.base import Base
 from src.core.database import get_db
 from src.main import app
-
 
 VALID_ANALYSIS_JSON = json.dumps(
     {
@@ -53,9 +52,8 @@ def client(db_session):
             pass
 
     app.dependency_overrides[get_db] = override_get_db
-    with patch("src.main.init_db"):
-        with TestClient(app) as c:
-            yield c
+    with patch("src.main.init_db"), TestClient(app) as c:
+        yield c
     app.dependency_overrides.clear()
 
 
@@ -68,9 +66,7 @@ class TestHealthEndpoint:
 
 class TestJournalEndpoint:
     @patch("src.main.journal_service.analyzer")
-    def test_post_journal_success(
-        self, mock_analyzer: MagicMock, client: TestClient
-    ) -> None:
+    def test_post_journal_success(self, mock_analyzer: MagicMock, client: TestClient) -> None:
         from src.analyzer import JournalAnalysis
 
         analysis = JournalAnalysis.model_validate_json(VALID_ANALYSIS_JSON)
@@ -86,18 +82,14 @@ class TestJournalEndpoint:
         assert "created_at" in data
 
     @patch("src.main.journal_service.analyzer")
-    def test_post_journal_empty_text(
-        self, mock_analyzer: MagicMock, client: TestClient
-    ) -> None:
+    def test_post_journal_empty_text(self, mock_analyzer: MagicMock, client: TestClient) -> None:
         mock_analyzer.analyze = AsyncMock(side_effect=ValueError("Journal entry must not be empty"))
 
         response = client.post("/journal", json={"text": ""})
         assert response.status_code == 422
 
     @patch("src.main.journal_service.analyzer")
-    def test_post_journal_llm_failure(
-        self, mock_analyzer: MagicMock, client: TestClient
-    ) -> None:
+    def test_post_journal_llm_failure(self, mock_analyzer: MagicMock, client: TestClient) -> None:
         mock_analyzer.analyze = AsyncMock(side_effect=RuntimeError("Failed to generate"))
 
         response = client.post("/journal", json={"text": "test"})
@@ -106,17 +98,13 @@ class TestJournalEndpoint:
 
 class TestHistoryEndpoint:
     @patch("src.main.journal_service.analyzer")
-    def test_get_history_empty(
-        self, mock_analyzer: MagicMock, client: TestClient
-    ) -> None:
+    def test_get_history_empty(self, mock_analyzer: MagicMock, client: TestClient) -> None:
         response = client.get("/journal/history")
         assert response.status_code == 200
         assert response.json() == []
 
     @patch("src.main.journal_service.analyzer")
-    def test_get_history_after_post(
-        self, mock_analyzer: MagicMock, client: TestClient
-    ) -> None:
+    def test_get_history_after_post(self, mock_analyzer: MagicMock, client: TestClient) -> None:
         from src.analyzer import JournalAnalysis
 
         analysis = JournalAnalysis.model_validate_json(VALID_ANALYSIS_JSON)
@@ -134,16 +122,12 @@ class TestHistoryEndpoint:
 
 class TestDetailEndpoint:
     @patch("src.main.journal_service.analyzer")
-    def test_get_entry_not_found(
-        self, mock_analyzer: MagicMock, client: TestClient
-    ) -> None:
+    def test_get_entry_not_found(self, mock_analyzer: MagicMock, client: TestClient) -> None:
         response = client.get("/journal/999")
         assert response.status_code == 404
 
     @patch("src.main.journal_service.analyzer")
-    def test_get_entry_by_id(
-        self, mock_analyzer: MagicMock, client: TestClient
-    ) -> None:
+    def test_get_entry_by_id(self, mock_analyzer: MagicMock, client: TestClient) -> None:
         from src.analyzer import JournalAnalysis
 
         analysis = JournalAnalysis.model_validate_json(VALID_ANALYSIS_JSON)
@@ -159,13 +143,11 @@ class TestDetailEndpoint:
 
 class TestClearEndpoint:
     @patch("src.main.clear_entries")
-    def test_clear_all_entries(
-        self, mock_clear_entries: MagicMock, client: TestClient
-    ) -> None:
+    def test_clear_all_entries(self, mock_clear_entries: MagicMock, client: TestClient) -> None:
         mock_clear_entries.return_value = 5
 
         response = client.delete("/journal/all")
-        
+
         assert response.status_code == 200
         assert response.json() == {"deleted": 5}
         mock_clear_entries.assert_called_once()
