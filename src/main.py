@@ -1,4 +1,5 @@
 import json
+import os
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
@@ -9,6 +10,7 @@ load_dotenv(override=True)
 
 from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import APIKeyHeader
 from pydantic import BaseModel, ConfigDict, ValidationError
 from sqlalchemy.orm import Session
 
@@ -19,6 +21,16 @@ from src.core.models import JournalEntry
 from src.services.journal_service import JournalService
 
 logger = get_logger(__name__)
+
+api_key_header = APIKeyHeader(name="X-API-Key", auto_error=True)
+
+def verify_api_key(api_key: str = Depends(api_key_header)) -> str:
+    expected = os.getenv("API_KEY")
+    if not expected:
+        raise HTTPException(status_code=500, detail="API_KEY not configured on server")
+    if api_key != expected:
+        raise HTTPException(status_code=401, detail="Invalid API Key")
+    return api_key
 
 
 @asynccontextmanager
@@ -34,7 +46,7 @@ app = FastAPI(title="PraxisIQ API", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -74,6 +86,7 @@ def health() -> dict[str, str]:
 async def analyze_journal(
     request: JournalRequest,
     db: Session = Depends(get_db),
+    api_key: str = Depends(verify_api_key),
 ) -> JournalEntryResponse:
     try:
         entry = await journal_service.process_journal_entry(db, request.text)
@@ -96,13 +109,17 @@ def journal_history(
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
     db: Session = Depends(get_db),
+    api_key: str = Depends(verify_api_key),
 ) -> list[JournalEntryResponse]:
     entries = get_entries(db, skip=skip, limit=limit)
     return [_entry_to_response(e) for e in entries]
 
 
 @app.delete("/journal/all")
-def journal_clear_all(db: Session = Depends(get_db)) -> dict[str, int]:
+def journal_clear_all(
+    db: Session = Depends(get_db),
+    api_key: str = Depends(verify_api_key),
+) -> dict[str, int]:
     """Delete all journal entries. Returns the count of deleted rows."""
     deleted = clear_entries(db)
     logger.info("Cleared all journal entries (%d rows)", deleted)
@@ -114,6 +131,7 @@ async def journal_search(
     q: str = Query(..., min_length=2, description="Search conceptually similar entries"),
     limit: int = Query(5, ge=1, le=20),
     db: Session = Depends(get_db),
+    api_key: str = Depends(verify_api_key),
 ) -> list[JournalEntryResponse]:
     """Semantic search over past journal entries."""
     entries = await journal_service.search_similar(db, query_text=q, limit=limit)
@@ -124,6 +142,7 @@ async def journal_search(
 def journal_detail(
     entry_id: int,
     db: Session = Depends(get_db),
+    api_key: str = Depends(verify_api_key),
 ) -> JournalEntryResponse:
     entry = get_entry_by_id(db, entry_id)
     if entry is None:

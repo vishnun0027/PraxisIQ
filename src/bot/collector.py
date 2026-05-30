@@ -81,10 +81,10 @@ async def process_update(
             await send_message(int(chat_id), summary)
 
     except Exception as exc:
-        logger.error("Failed to analyze and save message: %s", exc)
+        logger.error("Failed to analyze and save message: %s", exc, exc_info=True)
         await send_message(
             int(chat_id),
-            f"⚠️ **Processing Error**: Could not ingest journal. Technical logs reported:\n`{str(exc)}`",
+            "⚠️ **Processing Error**: Could not ingest journal. The system encountered an unexpected error. Please try again later.",
         )
 
 

@@ -43,6 +43,8 @@ def db_session():
         Base.metadata.drop_all(bind=engine)
 
 
+from src.main import app, verify_api_key
+
 @pytest.fixture()
 def client(db_session):
     def override_get_db():
@@ -50,8 +52,12 @@ def client(db_session):
             yield db_session
         finally:
             pass
+            
+    def override_verify_api_key():
+        return "ci-dummy-api-key"
 
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[verify_api_key] = override_verify_api_key
     with patch("src.main.init_db"), TestClient(app) as c:
         yield c
     app.dependency_overrides.clear()

@@ -27,6 +27,7 @@ jobs:
       TELEGRAM_BOT_TOKEN: "0000000000:ci-dummy-token"
       TELEGRAM_ALLOWED_CHAT_ID: "123456789"
       EMBED_SERVER_URL: "http://localhost:8080"
+      API_KEY: "ci-dummy-api-key"
 
     steps:
       - name: Checkout Code
