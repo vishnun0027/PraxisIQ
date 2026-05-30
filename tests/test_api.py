@@ -101,8 +101,7 @@ class TestJournalEndpoint:
 
 
 class TestHistoryEndpoint:
-    @patch("src.main.journal_service.analyzer")
-    def test_get_history_empty(self, mock_analyzer: MagicMock, client: TestClient) -> None:
+    def test_get_history_empty(self, client: TestClient) -> None:
         response = client.get("/journal/history")
         assert response.status_code == 200
         assert response.json() == []
@@ -125,8 +124,7 @@ class TestHistoryEndpoint:
 
 
 class TestDetailEndpoint:
-    @patch("src.main.journal_service.analyzer")
-    def test_get_entry_not_found(self, mock_analyzer: MagicMock, client: TestClient) -> None:
+    def test_get_entry_not_found(self, client: TestClient) -> None:
         response = client.get("/journal/999")
         assert response.status_code == 404
 
