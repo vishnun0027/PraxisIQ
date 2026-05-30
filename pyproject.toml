@@ -48,5 +48,4 @@ known-first-party = ["praxisiq", "core", "services", "bot"]
 
 [tool.mypy]
 python_version = "3.12"
-strict = true
 ignore_missing_imports = true

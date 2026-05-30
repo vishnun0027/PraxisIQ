@@ -42,7 +42,7 @@ def clear_entries(db: Session) -> int:
     """Delete all journal entries. Returns the number of deleted rows."""
     result = db.execute(delete(JournalEntry))
     db.commit()
-    return result.rowcount
+    return result.rowcount  # type: ignore[attr-defined]
 
 
 def search_similar_entries(

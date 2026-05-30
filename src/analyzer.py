@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import yaml
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
 from langchain_groq import ChatGroq
 from pydantic import BaseModel, Field
 
@@ -114,7 +114,7 @@ class ChatCopilot:
         self._llm = get_llm()
 
     async def chat(self, chat_history: list, new_message: str) -> str:
-        messages = [
+        messages: list[BaseMessage] = [
             SystemMessage(
                 content=(
                     "You are the PraxisIQ assistant, a compassionate CBT-trained therapist. "
@@ -135,7 +135,10 @@ class ChatCopilot:
 
         try:
             response = await self._llm.ainvoke(messages)
-            return response.content
+            content = response.content
+            if not isinstance(content, str):
+                raise TypeError("Expected string response from LLM")
+            return content
         except Exception as exc:
             logger.error("Failed to generate chat response: %s", exc)
             raise RuntimeError("Failed to generate response via Groq") from exc

@@ -1,3 +1,4 @@
+import asyncio
 import os
 
 from dotenv import load_dotenv
@@ -16,7 +17,7 @@ from src.core.logging import get_logger
 logger = get_logger(__name__)
 
 
-def run_weekly_report() -> None:
+async def run_weekly_report() -> None:
     chat_id = os.getenv("TELEGRAM_ALLOWED_CHAT_ID")
     if not chat_id:
         logger.error("TELEGRAM_ALLOWED_CHAT_ID not found.")
@@ -27,7 +28,7 @@ def run_weekly_report() -> None:
         entries = get_recent_entries(db, days=7)
         if not entries:
             logger.info("No entries this week.")
-            send_message(
+            await send_message(
                 int(chat_id),
                 "📅 **Weekly Check-in**\n\nYou haven't journaled any entries this week. Take a few minutes today to check in with yourself!",
             )
@@ -73,7 +74,7 @@ def run_weekly_report() -> None:
         # Add a nice header
         final_message = f"📅 **Your PraxisIQ Weekly Digest**\n\n{report}"
 
-        send_message(int(chat_id), final_message)
+        await send_message(int(chat_id), final_message)
         logger.info("Weekly report sent successfully.")
 
     except Exception as exc:
@@ -84,4 +85,4 @@ def run_weekly_report() -> None:
 
 if __name__ == "__main__":
     init_db()
-    run_weekly_report()
+    asyncio.run(run_weekly_report())
