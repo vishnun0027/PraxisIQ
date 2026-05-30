@@ -45,6 +45,7 @@ def db_session():
 
 from src.main import app, verify_api_key
 
+
 @pytest.fixture()
 def client(db_session):
     def override_get_db():
@@ -52,7 +53,7 @@ def client(db_session):
             yield db_session
         finally:
             pass
-            
+
     def override_verify_api_key():
         return "ci-dummy-api-key"
 

@@ -24,6 +24,7 @@ logger = get_logger(__name__)
 
 api_key_header = APIKeyHeader(name="X-API-Key", auto_error=True)
 
+
 def verify_api_key(api_key: str = Depends(api_key_header)) -> str:
     expected = os.getenv("API_KEY")
     if not expected:

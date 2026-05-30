@@ -35,6 +35,7 @@ class TestJournalAnalysis:
         data = json.loads(VALID_ANALYSIS_JSON)
         data["emotional_intensity"] = 15
         from pydantic import ValidationError
+
         with pytest.raises(ValidationError):
             JournalAnalysis.model_validate(data)
 
