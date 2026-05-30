@@ -27,3 +27,8 @@ dev = [
     "pytest>=9.0.2",
     "pytest-cov>=7.0.0",
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"src/main.py" = ["E402"]
+"src/bot/collector.py" = ["E402"]
+"src/jobs/weekly_report.py" = ["E402"]

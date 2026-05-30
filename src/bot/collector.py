@@ -127,7 +127,6 @@ async def run_collector() -> None:
             
             # Process updates. We use a single session for the batch or one per update?
             # One per update is safer for async.
-            tasks = []
             for update in updates:
                 update_id = update.get("update_id")
                 offset = update_id + 1
