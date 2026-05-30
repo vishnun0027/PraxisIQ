@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker
 
 from src.core.base import Base
 from src.core.database import get_db
-from src.main import app
+from src.main import app, verify_api_key
 
 VALID_ANALYSIS_JSON = json.dumps(
     {
@@ -41,9 +41,6 @@ def db_session():
     finally:
         session.close()
         Base.metadata.drop_all(bind=engine)
-
-
-from src.main import app, verify_api_key
 
 
 @pytest.fixture()
