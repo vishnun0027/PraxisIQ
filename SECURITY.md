@@ -8,8 +8,7 @@ If you discover a security vulnerability in PraxisIQ, please report it responsib
 
 **Please do NOT open a public issue for security vulnerabilities.**
 
-Instead, email your findings to:
-- vishnun0027@gmail.com
+Instead, please report it via GitHub Security Advisories, which provides a private channel for discussing vulnerabilities.
 
 Include the following details:
 - Description of the vulnerability

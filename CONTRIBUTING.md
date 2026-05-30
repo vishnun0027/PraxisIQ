@@ -46,6 +46,5 @@ Be respectful and inclusive. We're all here to learn and grow together.
 
 - Check existing [Issues](https://github.com/vishnun0027/PraxisIQ/issues)
 - Start a [Discussion](https://github.com/vishnun0027/PraxisIQ/discussions)
-- Email vishnun0027@gmail.com
 
 Thank you for contributing! 🎉
