@@ -54,3 +54,26 @@ Every week, receive a beautifully compiled summary highlighting your emotional t
 * 🧘 **Mindfulness Practitioners**: Anyone looking to build a consistent, meaningful journaling habit.
 * 📈 **Growth-Minded Individuals**: People who want to trace their emotional habits and spot recurring cognitive bottlenecks.
 * ⚡ **Busy Professionals**: Individuals seeking a rapid, low-friction channel to vent, reflect, and gain immediate mental clarity on the go.
+
+---
+
+## 🚀 Production Deployment
+
+This project is deployed automatically to the production VM using GitHub Actions when changes are pushed to `main`.
+
+### Automated CI/CD
+The deployment workflow is configured in [.github/workflows/ci-cd.yml](file://.github/workflows/ci-cd.yml) and runs on pushes to `main`. It connects to the VM via SSH, checks out the code, and triggers the deployment script.
+
+### Unified Deployment Script
+All deployment steps are encapsulated in [scripts/deploy.sh](file://scripts/deploy.sh):
+- **Dependencies**: Runs `uv sync --frozen` to prepare the isolated virtual environment.
+- **Systemd User Configuration**: Templates the systemd files dynamically (resolving paths and user context) and registers them to `~/.config/systemd/user/`.
+- **Linger Activation**: Keeps services running even after the SSH session disconnects.
+- **Service Management**: Restarts `praxisiq-embed.service`, `praxisiq-api.service`, `praxisiq-collector.service`, and `praxisiq-weekly.timer`.
+- **Health Check**: Runs a health loop against `http://localhost:8000/health` to verify success.
+
+To trigger a manual deploy on the VM, execute:
+```bash
+chmod +x scripts/deploy.sh
+./scripts/deploy.sh
+```

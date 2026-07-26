@@ -82,41 +82,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            set -e
             cd /home/vishnu/worklab/praxisiq
-            export PATH="$HOME/.local/bin:$PATH"
-
-            echo "--- Pulling latest code ---"
-            git reset --hard HEAD
-            git pull origin main
-
-            echo "--- Syncing dependencies ---"
-            uv sync --frozen
-
-            echo "--- Installing systemd service files ---"
-            mkdir -p ~/.config/systemd/user/
-            cp /home/vishnu/worklab/praxisiq/config/systemd/* ~/.config/systemd/user/
-
-            echo "--- Reloading systemd and restarting services ---"
-            systemctl --user daemon-reload
-            systemctl --user enable praxisiq-embed.service praxisiq-api.service praxisiq-collector.service praxisiq-weekly.timer
-            systemctl --user restart praxisiq-embed.service
-            sleep 3
-            systemctl --user restart praxisiq-api.service praxisiq-collector.service praxisiq-weekly.timer
-
-            echo "--- Verifying deployment (health check) ---"
-            sleep 5
-            curl --fail --silent --show-error http://localhost:8000/health \
-              && echo "✅ API health check passed" \
-              || (echo "❌ API health check FAILED" && exit 1)
-
-            echo "--- Checking service statuses ---"
-            systemctl --user is-active --quiet praxisiq-api.service \
-              && echo "✅ praxisiq-api.service is active" \
-              || echo "⚠️  praxisiq-api.service is NOT active"
-            systemctl --user is-active --quiet praxisiq-collector.service \
-              && echo "✅ praxisiq-collector.service is active" \
-              || echo "⚠️  praxisiq-collector.service is NOT active"
-            systemctl --user is-active --quiet praxisiq-embed.service \
-              && echo "✅ praxisiq-embed.service is active" \
-              || echo "⚠️  praxisiq-embed.service is NOT active"
+            chmod +x scripts/deploy.sh
+            ./scripts/deploy.sh
